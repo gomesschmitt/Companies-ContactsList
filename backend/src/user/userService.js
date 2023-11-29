@@ -1,35 +1,18 @@
-var userService = require ('./userModel')
+var userRepository = require('../user/userRepository')
 
-module.exports.getDataFromDBService = () => {
-
-    return new Promise ( function checkURL(resolve, reject) {
-        userModel.find({}, function returnData(error, result) {
-
-            if(error) {
-                reject(false)
-            } else {
-                resolve(result);
-            }
-        })
-    })
+ const createUser = async (email, firstName, lastName, password, birthDay, iban) => {
+    const response = await userRepository.insertUser(email, firstName, lastName, password, birthDay, iban)
+    return response
 }
 
-module.exports.createUserDBService = (userDetails) => {
-
-    return new Promise (function myFn(resolve, reject) {
-
-        var userModelData = new userModel();
-
-        userModelData.name = userDetails.name;
-        userModelData.address = userDetails.address;
-        userModelData.phone = userDetails.phone;
-
-        userModelData.save(function resultHandle(error, result) {
-            if (error) {
-                reject(false);
-            } else {
-                resolve(true);
-            }
-        })
-    })
+const getAllUsers = async () => {
+    const response = await userRepository.getAllUsers()
+    return response
 }
+
+const removeUser = async (email) => {
+    const response = await userRepository.deleteUser(email)
+    return response
+}
+
+module.exports = { createUser, getAllUsers, removeUser}
