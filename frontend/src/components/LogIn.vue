@@ -23,6 +23,7 @@
             </div>
         </v-card>
     </div>
+    <!--TODO try to make the clickable part of the button all functionale and not only one part of it-->
 </template>
 <script>
 import { RouterLink } from 'vue-router'

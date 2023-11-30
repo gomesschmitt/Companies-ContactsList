@@ -1,6 +1,6 @@
 var userRepository = require('../user/userRepository')
 
- const createUser = async (email, firstName, lastName, password, birthDay, iban) => {
+const createUser = async (email, firstName, lastName, password, birthDay, iban) => {
     const response = await userRepository.insertUser(email, firstName, lastName, password, birthDay, iban)
     return response
 }
@@ -15,4 +15,4 @@ const removeUser = async (email) => {
     return response
 }
 
-module.exports = { createUser, getAllUsers, removeUser}
+module.exports = { createUser, getAllUsers, removeUser }

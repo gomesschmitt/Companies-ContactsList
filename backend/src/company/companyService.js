@@ -1,6 +1,6 @@
 var companyRepository = require('../company/companyRepository')
 
- const createCompany = async (companyIdNumber, companyName, companyCountry, companyCity, companyZip, companyStreet, companyMail, companyContacts, createdBy, createdOn) => {
+const createCompany = async (companyIdNumber, companyName, companyCountry, companyCity, companyZip, companyStreet, companyMail, companyContacts, createdBy, createdOn) => {
     const response = await companyRepository.insertCompany(companyIdNumber, companyName, companyCountry, companyCity, companyZip, companyStreet, companyMail, companyContacts, createdBy, createdOn)
     return response
 }
@@ -15,4 +15,4 @@ const removeCompany = async (companyIdNumber) => {
     return response
 }
 
-module.exports = { createCompany, getAllCompanies, removeCompany}
+module.exports = { createCompany, getAllCompanies, removeCompany }
