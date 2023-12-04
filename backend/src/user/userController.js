@@ -63,7 +63,6 @@ var login = async (req, res, next) => {
     }
 };
 
-
 var postUser = async (req, res) => {
     var status = await userService.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.birthDay, req.body.iban);
     if (status) {
