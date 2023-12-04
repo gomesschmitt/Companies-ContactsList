@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LogIn from '../components/LogIn.vue'
-import Table from '../components/Table.vue'
+import Table from '../components/TableComponent.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

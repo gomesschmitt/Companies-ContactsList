@@ -1,37 +1,29 @@
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = process.env.CONNECTION_STRING;
+const client = require('../../db');
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+const myDB = client.db("RobertoChallenge"); 
+const myColl = myDB.collection("contact"); 
 
-const myDB = client.db("RobertoChallenge");
-const myColl = myDB.collection("contact");
 
 const insertContact = async (contactId, contactMail, contactFirstName, contactLastName, contactPhoneNumber, companyId) => {
-  // Verifica se a empresa com o companyId existe
+  // Check's if the companyId exists
   const companyExists = await myDB.collection("companies").findOne({ companyIdNumber: companyId });
   if (!companyExists) {
-    throw new Error(`Empresa não encontrada para o companyId: ${companyId}`);
+    throw new Error(`Company not found with the companyId: ${companyId}`);
   }
-  // O companyIDNumber "companyID" vai ser usado para depois criar um novo contacto, caso nao haja um companyID da um erro 
+  //The "companyID" will be used to create a new contact, if there is no companyID it gives an error
 
   const contactInUse = await myDB.collection("companies").findOne({ companyContacts: contactId });
   if (contactInUse) {
-    throw new Error(`O contactId ${contactId} já está associado a outra empresa.`);
+    throw new Error(`The contact ${contactId} is already in use.`);
   }
-  // O CompanyContacts não pode ser o mesmo que o contactId , caso contrario retorna erro
+  // The CompanyContacts cannot be the same as contactId , otherwise gives an error
   const contact = {
     contactIdNumber: contactId,
     contactMail: contactMail,
     contactFirstName: contactFirstName,
     contactLastName: contactLastName,
     contactPhoneNumber: contactPhoneNumber,
-    companyId: companyId // Referência para a empresa
+    companyId: companyId // Reference to the company
   };
 
   const result = await myColl.insertOne(contact);
