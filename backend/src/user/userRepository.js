@@ -26,4 +26,24 @@ const deleteUser = async (emailToDelete) => {
   return result
 }
 
-module.exports = { insertUser, getAllUsers, deleteUser }
+const updateUser = async (emailToUpdate, updatedEmail, updatedPassword, updatedData) => {
+  const user = await myColl.findOne({ email: emailToUpdate });
+
+  if (!user) {
+      return { success: false, message: 'User not found. Cannot update.' };
+  }
+
+  const result = await myColl.updateOne(
+      { email: emailToUpdate },
+      { $set: { email: updatedEmail, userPassword: updatedPassword, ...updatedData } }
+  );
+
+  return { success: result.modifiedCount > 0, modifiedCount: result.modifiedCount };
+}
+
+const getUserByEmail = async (email) => {
+  const user = await myColl.findOne({ email: email });
+  return user;
+}
+
+module.exports = { insertUser, getAllUsers, deleteUser, updateUser, getUserByEmail }

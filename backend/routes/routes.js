@@ -18,6 +18,8 @@ router.route('/register').post(userController.register);
 
 router.route('/login').post(userController.login);
 
+router.route('/user/edit').patch(userController.updateUser)
+
 // Company Routes
 
 router.route('/companies/getAll').get(companyController.getAllCompanies);

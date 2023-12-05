@@ -27,4 +27,25 @@ const removeUser = async (email) => {
     return response;
 };
 
-module.exports = { createUser, getAllUsers, removeUser };
+const updateUser = async (emailToUpdate, updatedEmail, updatedPassword, updatedData) => {
+    try {
+        const user = await userRepository.getUserByEmail(emailToUpdate);
+
+        if (!user) {
+            return { success: false, status: 404, message: 'User not found. Cannot update.' };
+        }
+
+        const result = await userRepository.updateUser(emailToUpdate, updatedEmail, updatedPassword, updatedData);
+
+        if (!result.success) {
+            return { success: false, status: 500, message: 'Error updating user.' };
+        }
+
+        return { success: true, status: 200, message: 'User updated successfully' };
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return { success: false, status: 500, message: error.message || 'Error updating user' };
+    }
+};
+
+module.exports = { createUser, getAllUsers, removeUser, updateUser };

@@ -90,4 +90,20 @@ var deleteUser = async (req, res) => {
     }
 }
 
-module.exports = { postUser, getAllUsers, deleteUser, register, login }
+var updateUser = async (req, res) => {
+    const { emailToUpdate, updatedEmail, updatedPassword, updatedData } = req.body;
+
+    try {
+        var result = await userService.updateUser(emailToUpdate, updatedEmail, updatedPassword, updatedData);
+        
+        if (result.success) {
+            res.status(result.status).json({ "status": true, "message": "User updated successfully" });
+        } else {
+            res.status(result.status).json({ "status": false, "message": result.message });
+        }
+    } catch (error) {
+        res.status(500).json({ "status": false, "message": "Internal Server Error" });
+    }
+};
+
+module.exports = { postUser, getAllUsers, deleteUser, updateUser, register, login }
