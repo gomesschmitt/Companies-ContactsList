@@ -63,14 +63,6 @@ var login = async (req, res, next) => {
     }
 };
 
-var postUser = async (req, res) => {
-    var status = await userService.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.birthDay, req.body.iban);
-    if (status) {
-        res.send({ "status": true, "message": "User created successfully" });
-    } else {
-        res.send({ "status": false, "message": "Error creating user" });
-    }
-}
 
 var getAllUsers = async (req, res) => {
     var users = await userService.getAllUsers();
@@ -106,4 +98,4 @@ var updateUser = async (req, res) => {
     }
 };
 
-module.exports = { postUser, getAllUsers, deleteUser, updateUser, register, login }
+module.exports = { getAllUsers, deleteUser, updateUser, register, login }

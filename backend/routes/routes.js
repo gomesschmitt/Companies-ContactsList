@@ -10,8 +10,6 @@ var userController = require('../src/user/userController');
 
 router.route('/user/getAll').get(userController.getAllUsers);
 
-router.route('/user').post(userController.postUser);
-
 router.route('/user').delete(userController.deleteUser);
 
 router.route('/register').post(userController.register);
