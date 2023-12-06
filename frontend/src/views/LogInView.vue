@@ -8,7 +8,16 @@
 <br>               
               <v-text-field density="compact" placeholder="User Name" variant="outlined"></v-text-field>
 
-              <v-text-field density="compact" placeholder="Password" variant="outlined"></v-text-field>
+              <v-text-field
+    v-model="password.value.value"
+    :counter="7"
+    :error-messages="password.errorMessage.value"
+    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+    :type="showPassword ? 'text' : 'password'"
+    label="Password"
+    hint="At least 8 characters"
+    @click:append="showPassword = !showPassword"
+  ></v-text-field>
 
               <a href="#" class="text-body-2 font-weight-regular">Forgot Password?</a>
 

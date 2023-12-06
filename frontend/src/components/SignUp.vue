@@ -1,32 +1,38 @@
 <template>
+   <v-card class="mx-auto pa-16 pb-16" elevation="8" max-width="550" rounded="xl">
     <form @submit.prevent="submit">
-      <v-text-field
-        v-model="name.value.value"
-        :counter="10"
-        :error-messages="name.errorMessage.value"
-        label="Name"
-      ></v-text-field>
-  
-      <v-text-field
-        v-model="phone.value.value"
-        :counter="7"
-        :error-messages="phone.errorMessage.value"
-        label="Password"
-      ></v-text-field>
-  
+
       <v-text-field
         v-model="email.value.value"
         :error-messages="email.errorMessage.value"
         label="E-mail"
       ></v-text-field>
+
+      <v-text-field
+        v-model="firstName.value.value"
+        :counter="10"
+        :error-messages="firstName.errorMessage.value"
+        label="First Name"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="lastName.value.value"
+        :counter="10"
+        :error-messages="lastName.errorMessage.value"
+        label="Last Name"
+      ></v-text-field>
   
-      <v-select
-        v-model="select.value.value"
-        :items="items"
-        :error-messages="select.errorMessage.value"
-        label="Select"
-      ></v-select>
-  
+      <v-text-field
+    v-model="password.value.value"
+    :counter="7"
+    :error-messages="password.errorMessage.value"
+    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+    :type="showPassword ? 'text' : 'password'"
+    label="Password"
+    hint="At least 8 characters"
+    @click:append="showPassword = !showPassword"
+  ></v-text-field>
+
       <v-checkbox
         v-model="checkbox.value.value"
         :error-messages="checkbox.errorMessage.value"
@@ -46,29 +52,34 @@
         clear
       </v-btn>
     </form>
+  </v-card>
   </template>
   
   <script setup>
-    import { ref } from 'vue'
     import { useField, useForm } from 'vee-validate'
   
     const { handleSubmit, handleReset } = useForm({
       validationSchema: {
-        name (value) {
+        FirstName (value) {
           if (value?.length >= 2) return true
   
           return 'Name needs to be at least 2 characters.'
         },
-        phone (value) {
+        lastName (value) {
+          if (value?.length >= 2) return true
+  
+          return 'Name needs to be at least 2 characters.'
+        },
+        password (value) {
           if (value?.length > 9 && /[0-9-]+/.test(value)) return true
   
-          return 'Phone number needs to be at least 9 digits.'
+          return 'Password needs to be at least 9 digits.'
         },
-        email (value) {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
-  
-          return 'Must be a valid e-mail.'
-        },
+         passwordValidation  (value)  {
+          if (value?.length >= 8) return true;
+
+  return 'Password needs to be at least 8 characters.';
+},
         select (value) {
           if (value) return true
   
@@ -81,19 +92,13 @@
         },
       },
     })
-    const name = useField('name')
-    const phone = useField('phone')
+    const firstName = useField('firstName')
+    const lastName = useField('lastName')
+    const password = useField('password');
+    let showPassword = false;
     const email = useField('email')
-    const select = useField('select')
     const checkbox = useField('checkbox')
-  
-    const items = ref([
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-    ])
-  
+ 
     const submit = handleSubmit(values => {
       alert(JSON.stringify(values, null, 2))
     })
