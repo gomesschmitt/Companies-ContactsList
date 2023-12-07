@@ -11,7 +11,6 @@
 
       <v-text-field
         v-model="firstName.value.value"
-        :counter="10"
         :error-messages="firstName.errorMessage.value"
         label="First Name"
         class="mb-2"
@@ -19,7 +18,6 @@
 
       <v-text-field
         v-model="lastName.value.value"
-        :counter="10"
         :error-messages="lastName.errorMessage.value"
         label="Last Name"
         class="mb-2"
@@ -27,15 +25,21 @@
   
       <v-text-field
         v-model="password.value.value"
-        :error-messages="password.errorMessage.value"
         :type="showPassword ? 'text' : 'password'"
         label="Password"
-        hint="At least 8 characters"
-        @click:append="showPassword = !showPassword"
+        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append="togglePasswordVisibility"
         class="mb-2"
       ></v-text-field>
-      <br>
 
+      <v-checkbox
+        v-model="checkbox.value.value"
+        :error-messages="checkbox.errorMessage.value"
+        value="1"
+        label="I agree to the terms of Service."
+        type="checkbox"
+      ></v-checkbox>
+      <br>
       <v-btn class="me-16" type="submit">Submit</v-btn>
 
       <v-btn @click="handleReset" class="ml-5 mr-16">Clear</v-btn>
@@ -46,6 +50,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useField, useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
@@ -53,7 +58,12 @@ const router = useRouter()
 
 const { handleSubmit, handleReset } = useForm({
   validationSchema: {
-    FirstName(value) {
+    email (value) {
+        if (/^[a-z0-9.-]+@[a-z0-9.-]+\.[a-z]+$/i.test(value)) return true
+
+        return 'Must be a valid e-mail.'
+      },
+    firstName(value) {
       if (value?.length >= 2) return true
       return 'Name needs to be at least 2 characters.'
     },
@@ -64,10 +74,6 @@ const { handleSubmit, handleReset } = useForm({
     password(value) {
       if (value?.length > 9 && /[0-9-]+/.test(value)) return true
       return 'Password needs to be at least 9 digits.'
-    },
-    passwordValidation(value) {
-      if (value?.length >= 8) return true;
-      return 'Password needs to be at least 8 characters.';
     },
     select(value) {
       if (value) return true
@@ -80,15 +86,21 @@ const { handleSubmit, handleReset } = useForm({
   },
 })
 
+const email = useField('email')
 const firstName = useField('firstName')
 const lastName = useField('lastName')
 const password = useField('password');
-let showPassword = false;
-const email = useField('email')
+const checkbox = useField('checkbox');
+
+const showPassword = ref(false);
 
 const submit = handleSubmit(values => {
   alert(JSON.stringify(values, null, 2))
 })
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+}
 
 const goBack = () => {
   router.push('/')

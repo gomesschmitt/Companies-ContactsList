@@ -34,6 +34,8 @@
   
   <script>
   import { RouterLink } from 'vue-router';
+  import '@mdi/font/css/materialdesignicons.css'
+
   
   export default {
     components: {
