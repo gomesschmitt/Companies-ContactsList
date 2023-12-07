@@ -1,10 +1,6 @@
 <template>
-  <NavBar/>
-  <v-data-table
-    :headers="headers"
-    :items="companies"
-    :sort-by="[{ key: 'calories', order: 'asc' }]"
-  >
+  <NavBar />
+  <v-data-table :headers="headers" :items="companies" :sort-by="[{ key: 'calories', order: 'asc' }]">
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>Companies List</v-toolbar-title>
@@ -19,69 +15,37 @@
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
             </v-card-title>
-
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="Company Id"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.name" label="Company Id"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.Company"
-                      label="Company"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.Company" label="Company"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.Country"
-                      label="Country"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.Country" label="Country"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.City"
-                      label="City"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.City" label="City"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.ZipCode"
-                      label="Zip Code"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.ZipCode" label="Zip Code"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.Street"
-                      label="Street"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.Street" label="Street"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.MailAddress"
-                      label="Mail Address"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.MailAddress" label="Mail Address"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.Contacts"
-                      label="Contacts"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.Contacts" label="Contacts"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.CreatedBy"
-                      label="Created By"
-                    ></v-text-field>
+                    <v-text-field v-model="editedItem.CreatedBy" label="Created By"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.CreatedOn"
-                      label="Created On"
-                    ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -100,20 +64,11 @@
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5"
-              >Are you sure you want to delete this item?</v-card-title
-            >
+            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
-                >Cancel</v-btn
-              >
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="deleteItemConfirm"
-                >OK</v-btn
-              >
+              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -135,125 +90,128 @@
 <script>
 import NavBar from '../components/NavBar.vue'
 
-  export default {
-    components: {
-      NavBar,
+export default {
+  components: {
+    NavBar,
+  },
+  data: () => ({
+    dialog: false,
+    dialogDelete: false,
+    model: 'rounded-0',
+    headers: [
+      {
+        title: 'Companies ID',
+        align: 'start',
+        sortable: false,
+        key: 'name',
+      },
+      { title: 'Company Name', key: 'Company' },
+      { title: 'Country', key: 'Country' },
+      { title: 'City', key: 'City' },
+      { title: 'Zip Code', key: 'ZipCode' },
+      { title: 'Street', key: 'Street' },
+      { title: 'Mail Address', key: 'MailAddress' },
+      { title: 'Contacts', key: 'Contacts' },
+      { title: 'Created By', key: 'CreatedBy' },
+      { title: 'Created On', key: 'CreatedOn' },
+      { title: 'Actions', key: 'actions', sortable: false },
+    ],
+    companies: [],
+    editedIndex: -1,
+    editedItem: {
+      name: '',
+      Company: '',
+      Country: '',
+      ZipCode: '',
+      Street: '',
+      MailAddress: '',
+      Contacts: '',
+      CreatedBy: '',
     },
-    data: () => ({
-      dialog: false,
-      dialogDelete: false,
-      model: 'rounded-0',
-      headers: [
-        {
-          title: 'Companies ID',
-          align: 'start',
-          sortable: false,
-          key: 'name',
-        },
-        { title: 'Company Name', key: 'Company' },
-        { title: 'Country', key: 'Country' },
-        { title: 'City', key: 'City' },
-        { title: 'Zip Code', key: 'ZipCode' },
-        { title: 'Street', key: 'Street' },
-        { title: 'Mail Address', key: 'MailAddress' },
-        { title: 'Contacts', key: 'Contacts' },
-        { title: 'Created By', key: 'CreatedBy' },
-        { title: 'Created On', key: 'CreatedOn' },
-        { title: 'Actions', key: 'actions', sortable: false },
-      ],
-      companies: [],
-      editedIndex: -1,
-      editedItem: {
-        name: '',
-        Company: 0,
-        Country: 0,
-        ZipCode: 0,
-        Street: 0,
-        MailAddress: 0,
-        Contacts: 0,
-        CreatedBy: 0,
-        CreatedOn: 0,
-      },
-      defaultItem: {
-        name: '',
-        Company: 0,
-        Country: 0,
-        ZipCode: 0,
-        Street: 0,
-        MailAddress: 0,
-        Contacts: 0,
-        CreatedBy: 0,
-        CreatedOn: 0,
-      },
-    }),
+    defaultItem: {
+      name: '',
+      Company: '',
+      Country: '',
+      ZipCode: '',
+      Street: '',
+      MailAddress: '',
+      Contacts: '',
+      CreatedBy: '',
+    },
+  }),
 
-    computed: {
-      formTitle() {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-      },
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+    },
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close()
+    },
+    dialogDelete(val) {
+      val || this.closeDelete()
+    },
+  },
+
+  created() {
+    this.initialize()
+  },
+
+  methods: {
+    initialize() {
+      this.companies = [
+
+      ]
     },
 
-    watch: {
-      dialog(val) {
-        val || this.close()
-      },
-      dialogDelete(val) {
-        val || this.closeDelete()
-      },
+    editItem(item) {
+      this.editedIndex = this.companies.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
     },
 
-    created() {
-      this.initialize()
+    deleteItem(item) {
+      this.editedIndex = this.companies.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
     },
 
-    methods: {
-      initialize() {
-        this.companies = [
-          
-        ]
-      },
-
-      editItem(item) {
-        this.editedIndex = this.companies.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
-
-      deleteItem(item) {
-        this.editedIndex = this.companies.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
-
-      deleteItemConfirm() {
-        this.companies.splice(this.editedIndex, 1)
-        this.closeDelete()
-      },
-
-      close() {
-        this.dialog = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
-
-      closeDelete() {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
-
-      save() {
-        if (this.editedIndex > -1) {
-          Object.assign(this.companies[this.editedIndex], this.editedItem)
-        } else {
-          this.companies.push(this.editedItem)
-        }
-        this.close()
-      },
+    deleteItemConfirm() {
+      this.companies.splice(this.editedIndex, 1)
+      this.closeDelete()
     },
-  }
+
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    closeDelete() {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    save() {
+      if (this.editedIndex === -1) {
+        this.editedItem.CreatedOn = new Date().toLocaleDateString();
+      }
+
+      if (this.editedIndex > -1) {
+        Object.assign(this.companies[this.editedIndex], this.editedItem);
+      } else {
+        this.companies.push(this.editedItem);
+      }
+
+      this.close();
+    }
+  },
+}
 </script>

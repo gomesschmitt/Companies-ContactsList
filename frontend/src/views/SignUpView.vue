@@ -42,9 +42,17 @@
       <br>
       <v-btn class="me-16" type="submit">Submit</v-btn>
 
-      <v-btn @click="handleReset" class="ml-5 mr-16">Clear</v-btn>
-
-      <v-btn @click="goBack" class="ml-8">Back</v-btn>
+      <v-btn @click="handleReset" class="ml-5 mr-13">Clear</v-btn>
+      <v-btn
+        class="ml-5"
+        @click="goBack"
+      >
+        <v-icon
+          start
+          icon="mdi-arrow-left"
+        ></v-icon>
+        Back
+      </v-btn>
     </form>
   </v-card>
 </template>

@@ -29,16 +29,20 @@
               title="Home"
               value="home"
             ></v-list-item>
+            <RouterLink to="/user/edit">
             <v-list-item
                     prepend-icon="mdi-account"
                     title="Edit Account"
                     value="account"
                 ></v-list-item>
+            </RouterLink>
+            <RouterLink to="/">
             <v-list-item
               prepend-icon="mdi-account-group-outline"
               title="Sign Out"
               value="Sign Out"
             ></v-list-item>
+            </RouterLink>
           </v-list>
         </v-navigation-drawer>
       </v-layout>
@@ -58,6 +62,6 @@
   
   <style scoped>
 .navbar-card {
-  z-index: 1000; /* Ajuste o valor conforme necessário */
+  z-index: 1000;
 }
 </style>
