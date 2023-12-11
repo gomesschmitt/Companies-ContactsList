@@ -3,6 +3,7 @@ import LogInView from '../views/LogInView.vue'
 import Table from '../views/TableView.vue'
 import SignUp from '../views/SignUpView.vue'
 import EditAccount from '../views/EditAccount.vue'
+import Contacts from '../views/ContactPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/user/edit',
       name: 'EditAccount',
       component: EditAccount
+    },
+    {
+      path: '/contacts',
+      name: 'Contacts',
+      component: Contacts
     },
   ]
 })

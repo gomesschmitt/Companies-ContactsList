@@ -36,11 +36,18 @@
                     value="account"
                 ></v-list-item>
             </RouterLink>
-            <RouterLink to="/">
+            <RouterLink to="/contacts">
             <v-list-item
               prepend-icon="mdi-account-group-outline"
+              title="Add Contact"
+              value="addContact"
+            ></v-list-item>
+            </RouterLink>
+            <RouterLink to="/">
+            <v-list-item
+              prepend-icon="md:home"
               title="Sign Out"
-              value="Sign Out"
+              value="signOut"
             ></v-list-item>
             </RouterLink>
           </v-list>

@@ -18,9 +18,11 @@
             <v-card-text>
               <v-container>
                 <v-row>
+                  <!--
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.name" label="Company Id"></v-text-field>
                   </v-col>
+                  -->
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.Company" label="Company"></v-text-field>
                   </v-col>
@@ -99,12 +101,13 @@ export default {
     dialogDelete: false,
     model: 'rounded-0',
     headers: [
-      {
+/*      {
         title: 'Companies ID',
-        align: 'start',
+       align: 'start',
         sortable: false,
         key: 'name',
       },
+*/
       { title: 'Company Name', key: 'Company' },
       { title: 'Country', key: 'Country' },
       { title: 'City', key: 'City' },

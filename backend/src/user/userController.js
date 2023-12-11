@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 
 var register = async (req, res) => {
     try {
+        console.log('Received registration request:', req.body);
         console.log('Request body:', req.body);
         const hashedPassword = await bcrypt.hash(req.body.userPassword, 10);
 
@@ -17,8 +18,13 @@ var register = async (req, res) => {
             userIban: req.body.userIban
         });
         
+        console.log('Creating user:', newUser);
+
 
         await newUser.save();
+
+        console.log('User created successfully');
+
 
         res.send({ "status": true, "message": "User created successfully" });
     } catch (error) {

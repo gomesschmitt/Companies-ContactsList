@@ -22,6 +22,18 @@
         label="Last Name"
         class="mb-2"
       ></v-text-field>
+
+      <v-text-field
+        v-model="birthDay.value.value"
+        label="Birth Day"
+        class="mb-2"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="iban.value.value"
+        label="IBAN"
+        class="mb-2"
+      ></v-text-field>
   
       <v-text-field
         v-model="password.value.value"
@@ -61,6 +73,7 @@
 import { ref } from 'vue';
 import { useField, useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import axios from 'axios';
 
 const router = useRouter()
 
@@ -94,15 +107,37 @@ const { handleSubmit, handleReset } = useForm({
   },
 })
 
-const email = useField('email')
-const firstName = useField('firstName')
-const lastName = useField('lastName')
+const email = useField('email');
+const firstName = useField('firstName');
+const lastName = useField('lastName');
 const password = useField('password');
 const checkbox = useField('checkbox');
+const birthDay = useField('birthDay');
+const iban = useField('iban');
 
 const showPassword = ref(false);
 
+const handleSubmitFunction = async (values) => {
+  try {
+    const response = await axios.post('http://localhost:8000/register', {
+      userFirstName: values.firstName,
+      userLastName: values.lastName,
+      email: values.email,
+      userPassword: values.password,
+      userBirthDay: values.birthDay,
+      userIban: values.iban
+    });
+
+    console.log('Answer to backend:', response.data);
+
+    router.push('/register');
+  } catch (error) {
+    console.error('Error calling backend:', error);
+  }
+};
+
 const submit = handleSubmit(values => {
+  console.log('Form submitted with values:', values);
   alert(JSON.stringify(values, null, 2))
 })
 

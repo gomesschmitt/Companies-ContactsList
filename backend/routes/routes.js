@@ -4,7 +4,6 @@ const router = express.Router();
 var userController = require('../src/user/userController');
 var companyController = require('../src/company/companyController');
 var contactController = require('../src/contact/contactController')
-var userController = require('../src/user/userController');
 
 // User Routes
 
