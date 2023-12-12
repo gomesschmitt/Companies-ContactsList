@@ -90,7 +90,8 @@
 </template>
 
 <script>
-import NavBar from '../components/NavBar.vue'
+import NavBar from '../components/NavBar.vue';
+import axios from 'axios';
 
 export default {
   components: {
@@ -108,15 +109,15 @@ export default {
         key: 'name',
       },
 */
-      { title: 'Company Name', key: 'Company' },
-      { title: 'Country', key: 'Country' },
-      { title: 'City', key: 'City' },
-      { title: 'Zip Code', key: 'ZipCode' },
-      { title: 'Street', key: 'Street' },
-      { title: 'Mail Address', key: 'MailAddress' },
-      { title: 'Contacts', key: 'Contacts' },
-      { title: 'Created By', key: 'CreatedBy' },
-      { title: 'Created On', key: 'CreatedOn' },
+      { title: 'Company Name', key: 'companyName' },
+      { title: 'Country', key: 'companyCountry' },
+      { title: 'City', key: 'companyCity' },
+      { title: 'Zip Code', key: 'companyZip' },
+      { title: 'Street', key: 'companyStreet' },
+      { title: 'Mail Address', key: 'companyMail' },
+      { title: 'Contacts', key: 'companyContacts' },
+      { title: 'Created By', key: 'createdBy' },
+      { title: 'Created On', key: 'createdOn' },
       { title: 'Actions', key: 'actions', sortable: false },
     ],
     companies: [],
@@ -160,9 +161,21 @@ export default {
 
   created() {
     this.initialize()
+    this.fetchCompanies();
   },
 
   methods: {
+    
+    // TODO implement add companies input in FE to be saved in BE
+
+    async fetchCompanies() {
+      try {
+        const response = await axios.get('http://localhost:8000/companies/getAll');
+        this.companies = response.data.data || [];
+      } catch (error) {
+        console.error('Error getting company data:', error);
+      }
+    },
     initialize() {
       this.companies = [
 
