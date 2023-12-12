@@ -24,28 +24,28 @@
                   </v-col>
                   -->
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.Company" label="Company"></v-text-field>
+                    <v-text-field v-model="editedItem.companyName" label="Company"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.Country" label="Country"></v-text-field>
+                    <v-text-field v-model="editedItem.companyCountry" label="Country"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.City" label="City"></v-text-field>
+                    <v-text-field v-model="editedItem.companyCity" label="City"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.ZipCode" label="Zip Code"></v-text-field>
+                    <v-text-field v-model="editedItem.companyZip" label="Zip Code"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.Street" label="Street"></v-text-field>
+                    <v-text-field v-model="editedItem.companyStreet" label="Street"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.MailAddress" label="Mail Address"></v-text-field>
+                    <v-text-field v-model="editedItem.companyMail" label="Mail Address"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.Contacts" label="Contacts"></v-text-field>
+                    <v-text-field v-model="editedItem.companyContacts" label="Contacts"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.CreatedBy" label="Created By"></v-text-field>
+                    <v-text-field v-model="editedItem.createdBy" label="Created By"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                   </v-col>
@@ -58,7 +58,7 @@
               <v-btn color="blue-darken-1" variant="text" @click="close">
                 Cancel
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">
+              <v-btn color="blue-darken-1" variant="text" @click="saveCompany">
                 Save
               </v-btn>
             </v-card-actions>
@@ -102,17 +102,17 @@ export default {
     dialogDelete: false,
     model: 'rounded-0',
     headers: [
-/*      {
-        title: 'Companies ID',
-       align: 'start',
-        sortable: false,
-        key: 'name',
-      },
-*/
+      /*      {
+              title: 'Companies ID',
+             align: 'start',
+              sortable: false,
+              key: 'name',
+            },
+      */
       { title: 'Company Name', key: 'companyName' },
       { title: 'Country', key: 'companyCountry' },
       { title: 'City', key: 'companyCity' },
-      { title: 'Zip Code', key: 'companyZip' },
+      { title: 'ZipCode', key: 'companyZip' },
       { title: 'Street', key: 'companyStreet' },
       { title: 'Mail Address', key: 'companyMail' },
       { title: 'Contacts', key: 'companyContacts' },
@@ -123,14 +123,13 @@ export default {
     companies: [],
     editedIndex: -1,
     editedItem: {
-      name: '',
-      Company: '',
+      Company: '', // Certifique-se de que a chave está correta e com a mesma grafia
       Country: '',
       ZipCode: '',
       Street: '',
       MailAddress: '',
-      Contacts: '',
-      CreatedBy: '',
+      companyContacts: '',
+      createdBy: '',
     },
     defaultItem: {
       name: '',
@@ -139,8 +138,8 @@ export default {
       ZipCode: '',
       Street: '',
       MailAddress: '',
-      Contacts: '',
-      CreatedBy: '',
+      companyContacts: '',
+      createdBy: '',
     },
   }),
 
@@ -165,8 +164,31 @@ export default {
   },
 
   methods: {
-    
+
     // TODO implement add companies input in FE to be saved in BE
+    // TODO fix date format, date not showing up when the input is created
+
+    async saveCompany() { 
+      const newCompany = {
+        companyName: this.editedItem.companyName,
+        companyCountry: this.editedItem.companyCountry,
+        companyCity: this.editedItem.companyCity,
+        companyZip: this.editedItem.companyZip,
+        companyStreet: this.editedItem.companyStreet,
+        companyMail: this.editedItem.companyMail,
+        companyContacts: this.editedItem.companyContacts,
+        createdBy: this.editedItem.createdBy,
+        CreatedOn: new Date().toLocaleDateString(),  
+      };
+
+      try {
+        const response = await axios.post('http://localhost:8000/company', newCompany);
+        this.companies.push(response.data);
+        this.close();
+      } catch (error) {
+        console.error('Error creating company:', error);
+      }
+    },
 
     async fetchCompanies() {
       try {
