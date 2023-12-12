@@ -52,7 +52,7 @@
         type="checkbox"
       ></v-checkbox>
       <br>
-      <v-btn class="me-16" type="submit">Submit</v-btn>
+      <v-btn class="me-16" type="submit" @click="handleSubmitFunction">Submit</v-btn>
 
       <v-btn @click="handleReset" class="ml-5 mr-13">Clear</v-btn>
       <v-btn
@@ -117,24 +117,25 @@ const iban = useField('iban');
 
 const showPassword = ref(false);
 
-const handleSubmitFunction = async (values) => {
+const handleSubmitFunction = async () => {
   try {
     const response = await axios.post('http://localhost:8000/register', {
-      userFirstName: values.firstName,
-      userLastName: values.lastName,
-      email: values.email,
-      userPassword: values.password,
-      userBirthDay: values.birthDay,
-      userIban: values.iban
+      userFirstName: firstName.value.value,
+      userLastName: lastName.value.value,
+      email: email.value.value,
+      userPassword: password.value.value,
+      userBirthDay: birthDay.value.value,
+      userIban: iban.value.value
     });
 
     console.log('Answer to backend:', response.data);
 
-    router.push('/register');
+    router.push('/');
   } catch (error) {
     console.error('Error calling backend:', error);
   }
 };
+
 
 const submit = handleSubmit(values => {
   console.log('Form submitted with values:', values);

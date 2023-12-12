@@ -8,6 +8,8 @@ var register = async (req, res) => {
         console.log('Received registration request:', req.body);
         console.log('Request body:', req.body);
         const hashedPassword = await bcrypt.hash(req.body.userPassword, 10);
+        console.log('Hashed password:', hashedPassword);
+
 
         const newUser = new User({
             userFirstName: req.body.userFirstName,
