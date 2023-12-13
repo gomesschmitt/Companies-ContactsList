@@ -228,9 +228,21 @@ async saveCompany() {
 
     async deleteItemConfirm() {
   try {
-    await axios.delete(`http://localhost:8000/company`);
-    this.companies.splice(this.editedIndex, 1);
-    this.closeDelete();
+    console.log('Deleting company with ID:', this.editedItem.companyIdNumber);
+
+    const response = await axios.delete('http://localhost:8000/company', { data: { companyIdNumber: this.editedItem.companyIdNumber } });
+    
+    if (response.data.status) {
+      console.log('Company deleted successfully');
+
+      // Utilize a função filter para criar uma nova lista excluindo a empresa que está sendo deletada
+      this.companies = this.companies.filter(company => company.companyIdNumber !== this.editedItem.companyIdNumber);
+
+      console.log('Updated companies array:', this.companies);
+      this.closeDelete();
+    } else {
+      console.error('Error deleting company. Server response:', response.data);
+    }
   } catch (error) {
     console.error('Error deleting company:', error);
   }
