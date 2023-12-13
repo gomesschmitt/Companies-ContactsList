@@ -92,6 +92,7 @@
 <script>
 import NavBar from '../components/NavBar.vue';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   components: {
@@ -109,6 +110,7 @@ export default {
               key: 'name',
             },
       */
+      { title: 'Company ID', key: 'companyIdNumber' },
       { title: 'Company Name', key: 'companyName' },
       { title: 'Country', key: 'companyCountry' },
       { title: 'City', key: 'companyCity' },
@@ -166,29 +168,37 @@ export default {
   methods: {
 
     // TODO implement add companies input in FE to be saved in BE
-    // TODO fix date format, date not showing up when the input is created
 
-    async saveCompany() { 
-      const newCompany = {
-        companyName: this.editedItem.companyName,
-        companyCountry: this.editedItem.companyCountry,
-        companyCity: this.editedItem.companyCity,
-        companyZip: this.editedItem.companyZip,
-        companyStreet: this.editedItem.companyStreet,
-        companyMail: this.editedItem.companyMail,
-        companyContacts: this.editedItem.companyContacts,
-        createdBy: this.editedItem.createdBy,
-        CreatedOn: new Date().toLocaleDateString(),  
-      };
+    generateCompanyId() {
+      return uuidv4();
+  },
 
-      try {
-        const response = await axios.post('http://localhost:8000/company', newCompany);
-        this.companies.push(response.data);
-        this.close();
-      } catch (error) {
-        console.error('Error creating company:', error);
-      }
-    },
+async saveCompany() { 
+  try {
+    this.editedItem.companyIdNumber = this.companies.length + 1;
+
+    const newCompany = {
+      companyIdNumber: this.editedItem.companyIdNumber,
+      companyName: this.editedItem.companyName,
+      companyCountry: this.editedItem.companyCountry,
+      companyCity: this.editedItem.companyCity,
+      companyZip: this.editedItem.companyZip,
+      companyStreet: this.editedItem.companyStreet,
+      companyMail: this.editedItem.companyMail,
+      companyContacts: this.editedItem.companyContacts,
+      createdBy: this.editedItem.createdBy,
+      createdOn: new Date().toLocaleDateString(),  
+    };
+
+    const response = await axios.post('http://localhost:8000/company', newCompany);
+    this.companies.push(response.data);
+    this.close();
+  } catch (error) {
+    console.error('Error creating company:', error);
+  }
+},
+
+
 
     async fetchCompanies() {
       try {
@@ -216,10 +226,15 @@ export default {
       this.dialogDelete = true
     },
 
-    deleteItemConfirm() {
-      this.companies.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
+    async deleteItemConfirm() {
+  try {
+    await axios.delete(`http://localhost:8000/company`);
+    this.companies.splice(this.editedIndex, 1);
+    this.closeDelete();
+  } catch (error) {
+    console.error('Error deleting company:', error);
+  }
+},
 
     close() {
       this.dialog = false
@@ -238,10 +253,6 @@ export default {
     },
 
     save() {
-      if (this.editedIndex === -1) {
-        this.editedItem.CreatedOn = new Date().toLocaleDateString();
-      }
-
       if (this.editedIndex > -1) {
         Object.assign(this.companies[this.editedIndex], this.editedItem);
       } else {
