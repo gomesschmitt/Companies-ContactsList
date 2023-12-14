@@ -34,7 +34,7 @@
                     <v-text-field v-model="editedItem.contactPhoneNumber" label="Phone Number"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.companyID" label="Company ID"></v-text-field>
+                    <v-text-field v-model="editedItem.companyId" label="Company ID"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -95,7 +95,7 @@ export default {
       { title: 'First Name', key: 'contactFirstName' },
       { title: 'Last Name', key: 'contactLastName' },
       { title: 'Phone Number', key: 'contactPhoneNumber' },
-      { title: 'Company ID', key: 'companyID' },
+      { title: 'Company ID', key: 'companyId' },
       { title: 'Actions', key: 'actions', sortable: false },
     ],
     contacts: [],
@@ -106,7 +106,7 @@ export default {
       contactFirstName: '',
       contactLastName: '',
       contactPhoneNumber: '',
-      companyID: '',
+      companyId: '',
     },
     defaultItem: {
       contactIdNumber: '',
@@ -114,7 +114,7 @@ export default {
       contactFirstName: '',
       contactLastName: '',
       contactPhoneNumber: '',
-      companyID: '',
+      companyId: '',
     },
   }),
 
@@ -153,7 +153,7 @@ export default {
           contactFirstName: this.editedItem.contactFirstName,
           contactLastName: this.editedItem.contactLastName,
           contactPhoneNumber: this.editedItem.contactPhoneNumber,
-          companyID: this.editedItem.companyID,
+          companyId: this.editedItem.companyId,
         };
 
         const response = await axios.post('http://localhost:8000/contact', newContact);
