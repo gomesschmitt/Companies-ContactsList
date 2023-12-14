@@ -188,15 +188,15 @@ export default {
 
     async deleteItemConfirm() {
       try {
-        console.log('Deleting contact with ID:', this.editedItem.contactId);
+        console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
 
-        const response = await axios.delete('http://localhost:8000/contact', { data: { contactId: this.editedItem.contactId } });
+        const response = await axios.delete('http://localhost:8000/contact', { data: { contactIdNumber: this.editedItem.contactIdNumber } });
 
         if (response.data.status) {
           console.log('Contact deleted successfully');
 
           // Use a filter function to create a new list excluding the contact being deleted
-          this.contacts = this.contacts.filter(contact => contact.contactId !== this.editedItem.contactId);
+          this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
 
           console.log('Updated contacts array:', this.contacts);
           this.closeDelete();
