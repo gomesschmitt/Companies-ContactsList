@@ -136,6 +136,49 @@ export default {
   },
 
   methods: {
+
+    openUpdateDialog(item) {
+      this.editedIndex = this.contacts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.updateDialog = true;
+    },
+
+// TODO Fix bug that creates new one and doesn't update previous one
+
+    async updateContact() {
+  try {
+    const updatedFields = {
+      contactMail: this.editedItem.contactMail,
+      contactFirstName: this.editedItem.contactFirstName,
+      contactLastName: this.editedItem.contactLastName,
+      contactPhoneNumber: this.editedItem.contactPhoneNumber,
+      companyId: parseInt(this.editedItem.companyId, 10),
+    };
+
+    const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, updatedFields);
+
+    console.log('Update Response:', response.data);
+
+    if (response.data.status) {
+      console.log('Contact updated successfully');
+      this.contacts[this.editedIndex] = response.data.updatedContact;
+      this.closeUpdateDialog();
+    } else {
+      console.error('Error updating contact. Server response:', response.data);
+    }
+  } catch (error) {
+    console.error('Error updating contact:', error);
+  }
+},
+
+
+    closeUpdateDialog() {
+      this.updateDialog = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
     generateContactId() {
       return uuidv4();
     },
@@ -208,6 +251,7 @@ export default {
       }
     },
 
+    
     close() {
       this.dialog = false;
       this.$nextTick(() => {

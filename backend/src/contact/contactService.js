@@ -15,4 +15,9 @@ const removeContact = async (contactIdNumber) => {
     return response
 }
 
-module.exports = { createContact, getAllContacts, removeContact }
+const updateContact = async (contactId, updatedFields) => {
+    const response = await contactRepository.updateContact(contactId, updatedFields);
+    return response;
+};
+
+module.exports = { createContact, getAllContacts, removeContact, updateContact }

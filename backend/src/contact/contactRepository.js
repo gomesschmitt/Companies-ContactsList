@@ -30,6 +30,11 @@ const insertContact = async (contactId, contactMail, contactFirstName, contactLa
   return result;
 }
 
+const updateContact = async (contactId, updatedFields) => {
+  const response = await contactRepository.updateContact(contactId, updatedFields);
+  return response;
+};
+
 const getAllContacts = async () => {
   const result = await myColl.find({}).toArray();
   return result;
@@ -40,4 +45,4 @@ const deleteContact = async (contactIdDelete) => {
   return result;
 }
 
-module.exports = { insertContact, getAllContacts, deleteContact };
+module.exports = { insertContact, getAllContacts, deleteContact, updateContact };

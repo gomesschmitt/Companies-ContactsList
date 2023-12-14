@@ -27,5 +27,18 @@ var deleteContact = async (req, res) => {
     }
 }
 
+var updateContact = async (req, res) => {
+    try {
+        const status = await contactService.updateContact(req.body.contactIdNumber, req.body);
+        if (status) {
+            res.send({ "status": true, "message": "Contact updated successfully" });
+        } else {
+            res.send({ "status": false, "message": "Error updating contact" });
+        }
+    } catch (error) {
+        console.error('Error updating contact:', error);
+        res.status(500).send({ "status": false, "message": "Internal Server Error" });
+    }
+}
 
-module.exports = { postContact, getAllContacts, deleteContact }
+module.exports = { postContact, getAllContacts, deleteContact, updateContact }
