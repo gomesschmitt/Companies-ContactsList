@@ -31,9 +31,25 @@ const insertContact = async (contactId, contactMail, contactFirstName, contactLa
 }
 
 const updateContact = async (contactId, updatedFields) => {
-  const response = await contactRepository.updateContact(contactId, updatedFields);
-  return response;
-};
+  // Ensure that the contactId exists
+  const existingContact = await myColl.findOne({ contactIdNumber: contactId });
+  if (!existingContact) {
+    throw new Error(`Contact not found with the contactId: ${contactId}`);
+  }
+
+  // Update only allowed fields
+  const allowedFields = ['contactMail', 'contactFirstName', 'contactLastName', 'contactPhoneNumber'];
+  const updateData = {};
+  for (const field of allowedFields) {
+    if (updatedFields[field] !== undefined) {
+      updateData[field] = updatedFields[field];
+    }
+  }
+
+  // Update the contact with the specified fields
+  const result = await myColl.updateOne({ contactIdNumber: contactId }, { $set: updateData });
+  return result;
+}
 
 const getAllContacts = async () => {
   const result = await myColl.find({}).toArray();
