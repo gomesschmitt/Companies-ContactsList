@@ -19,16 +19,13 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.contactIdNumber" label="Contact ID"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.contactMail" label="Contact Mail"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.contactFirstName" label="First Name"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.contactLastName" label="Last Name"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.contactMail" label="Contact Mail"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.contactPhoneNumber" label="Phone Number"></v-text-field>
@@ -91,9 +88,9 @@ export default {
     model: 'rounded-0',
     headers: [
       { title: 'Contact ID', key: 'contactIdNumber' },
-      { title: 'Contact Mail', key: 'contactMail' },
       { title: 'First Name', key: 'contactFirstName' },
       { title: 'Last Name', key: 'contactLastName' },
+      { title: 'Contact Mail', key: 'contactMail' },
       { title: 'Phone Number', key: 'contactPhoneNumber' },
       { title: 'Company ID', key: 'companyId' },
       { title: 'Actions', key: 'actions', sortable: false },
@@ -101,7 +98,7 @@ export default {
     contacts: [],
     editedIndex: -1,
     editedItem: {
-      contactIdNumber: '',
+      contactId: '',
       contactMail: '',
       contactFirstName: '',
       contactLastName: '',
@@ -109,7 +106,7 @@ export default {
       companyId: '',
     },
     defaultItem: {
-      contactIdNumber: '',
+      contactId: '',
       contactMail: '',
       contactFirstName: '',
       contactLastName: '',
@@ -145,15 +142,15 @@ export default {
 
     async saveContact() {
       try {
-        this.editedItem.contactIdNumber = this.contacts.length + 1;
+        this.editedItem.contactId = this.contacts.length + 1;
 
         const newContact = {
-          contactIdNumber: this.editedItem.contactIdNumber,
+          contactId: this.editedItem.contactId,
           contactMail: this.editedItem.contactMail,
           contactFirstName: this.editedItem.contactFirstName,
           contactLastName: this.editedItem.contactLastName,
           contactPhoneNumber: this.editedItem.contactPhoneNumber,
-          companyId: this.editedItem.companyId,
+          companyId: parseInt(this.editedItem.companyId, 10),
         };
 
         const response = await axios.post('http://localhost:8000/contact', newContact);
@@ -191,15 +188,15 @@ export default {
 
     async deleteItemConfirm() {
       try {
-        console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
+        console.log('Deleting contact with ID:', this.editedItem.contactId);
 
-        const response = await axios.delete('http://localhost:8000/contact', { data: { contactIdNumber: this.editedItem.contactIdNumber } });
+        const response = await axios.delete('http://localhost:8000/contact', { data: { contactId: this.editedItem.contactId } });
 
         if (response.data.status) {
           console.log('Contact deleted successfully');
 
           // Use a filter function to create a new list excluding the contact being deleted
-          this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
+          this.contacts = this.contacts.filter(contact => contact.contactId !== this.editedItem.contactId);
 
           console.log('Updated contacts array:', this.contacts);
           this.closeDelete();
