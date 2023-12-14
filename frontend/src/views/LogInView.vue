@@ -62,7 +62,7 @@ export default {
         console.log('API answer:', response.data);
 
         if (response.data.status === true) {
-          this.$router.push('/table');
+          this.$router.push('/companies');
         }
 
       } catch (error) {

@@ -24,24 +24,27 @@
           <v-divider></v-divider>
   
           <v-list density="compact" nav>
-            <v-list-item
-              prepend-icon="mdi-home-city"
-              title="Home"
-              value="home"
-            ></v-list-item>
+            <RouterLink to="/companies">
+              <v-list-item
+                prepend-icon="mdi-home-city"
+                title="Companies List"
+                value="companiesList"
+              ></v-list-item>
+            </RouterLink>
+            <RouterLink to="/contacts/list">
+              <v-list-item
+                prepend-icon="mdi-account-group-outline"
+                title="Contacts List"
+                value="contactsList"
+              ></v-list-item>
+            </RouterLink>
+
             <RouterLink to="/user/edit">
             <v-list-item
                     prepend-icon="mdi-account"
                     title="Edit Account"
                     value="account"
                 ></v-list-item>
-            </RouterLink>
-            <RouterLink to="/contacts">
-            <v-list-item
-              prepend-icon="mdi-account-group-outline"
-              title="Add Contact"
-              value="addContact"
-            ></v-list-item>
             </RouterLink>
             <RouterLink to="/">
             <v-list-item

@@ -1,6 +1,6 @@
 <template>
   <NavBar />
-  <v-data-table :headers="headers" :items="companies" :sort-by="[{ key: 'calories', order: 'asc' }]">
+  <v-data-table :headers="headers" :items="companies">
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>Companies List</v-toolbar-title>
@@ -18,11 +18,6 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <!--
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.name" label="Company Id"></v-text-field>
-                  </v-col>
-                  -->
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.companyName" label="Company"></v-text-field>
                   </v-col>

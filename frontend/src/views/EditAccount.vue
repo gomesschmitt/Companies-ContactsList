@@ -10,8 +10,8 @@
         ></v-text-field>
     
         <v-text-field
-          v-model="email.value.value"
-          :error-messages="email.errorMessage.value"
+          v-model="changedEmail.value.value"
+          :error-messages="changedEmail.errorMessage.value"
           label="New E-mail"
           class="mb-2"
         ></v-text-field>
@@ -25,7 +25,7 @@
           class="mb-2"
         ></v-text-field>
         <br>
-        <v-btn class="me-16" type="submit">Submit</v-btn>
+        <v-btn class="me-16" type="submit" @click="submit">Submit</v-btn>
   
         <v-btn @click="handleReset" class="ml-5 mr-13">Clear</v-btn>
         <v-btn
@@ -44,8 +44,9 @@
   
   <script setup>
   import { ref } from 'vue';
-  import { useField, useForm } from 'vee-validate'
-  import { useRouter } from 'vue-router'
+  import { useField, useForm } from 'vee-validate';
+  import { useRouter } from 'vue-router';
+  import axios from 'axios';
   
   const router = useRouter()
   
@@ -56,37 +57,46 @@
   
           return 'Must be a valid e-mail.'
         },
-      firstName(value) {
-        if (value?.length >= 2) return true
-        return 'Name needs to be at least 2 characters.'
-      },
-      lastName(value) {
-        if (value?.length >= 2) return true
-        return 'Last name needs to be at least 2 characters.'
-      },
+        oldEmail (value) {
+          if (/^[a-z0-9.-]+@[a-z0-9.-]+\.[a-z]+$/i.test(value)) return true
+  
+          return 'Must be a valid e-mail.'
+        },
       password(value) {
         if (value?.length > 9 && /[0-9-]+/.test(value)) return true
         return 'Password needs to be at least 9 digits.'
-      },
-      select(value) {
-        if (value) return true
-        return 'Select an item.'
-      },
-      checkbox(value) {
-        if (value === '1') return true
-        return 'Must be checked.'
       },
     },
   })
   
   const email = useField('email')
+  const changedEmail = useField('changedEmail')
   const password = useField('password');
-  
   const showPassword = ref(false);
   
-  const submit = handleSubmit(values => {
-    alert(JSON.stringify(values, null, 2))
-  })
+  const submit = handleSubmit(async (values) => {
+  try {
+    const response = await axios.patch('http://localhost:8000/user/edit', {
+      oldEmail: values.email,
+      newEmail: values.changedEmail,
+      password: values.password,
+    });
+
+    if (response.data.status) {
+      alert('Account updated successfully');
+
+      email.value.value = '';
+      changedEmail.value.value = '';
+      password.value.value = '';
+
+    } else {
+      alert('Failed to update account');
+    }
+  } catch (error) {
+    console.error('Error updating account:', error);
+    alert('An error occurred while updating the account');
+  }
+});
   
   const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
