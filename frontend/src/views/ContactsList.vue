@@ -136,41 +136,11 @@ export default {
   },
 
   methods: {
-
     openUpdateDialog(item) {
       this.editedIndex = this.contacts.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.updateDialog = true;
     },
-
-// TODO Fix bug that creates new one and doesn't update previous one
-
-    async updateContact() {
-  try {
-    const updatedFields = {
-      contactMail: this.editedItem.contactMail,
-      contactFirstName: this.editedItem.contactFirstName,
-      contactLastName: this.editedItem.contactLastName,
-      contactPhoneNumber: this.editedItem.contactPhoneNumber,
-      companyId: parseInt(this.editedItem.companyId, 10),
-    };
-
-    const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, updatedFields);
-
-    console.log('Update Response:', response.data);
-
-    if (response.data.status) {
-      console.log('Contact updated successfully');
-      this.contacts[this.editedIndex] = response.data.updatedContact;
-      this.closeUpdateDialog();
-    } else {
-      console.error('Error updating contact. Server response:', response.data);
-    }
-  } catch (error) {
-    console.error('Error updating contact:', error);
-  }
-},
-
 
     closeUpdateDialog() {
       this.updateDialog = false;
@@ -179,28 +149,41 @@ export default {
         this.editedIndex = -1;
       });
     },
+
     generateContactId() {
       return uuidv4();
     },
 
     async saveContact() {
       try {
-        this.editedItem.contactId = this.contacts.length + 1;
-
-        const newContact = {
-          contactId: this.editedItem.contactId,
-          contactMail: this.editedItem.contactMail,
-          contactFirstName: this.editedItem.contactFirstName,
-          contactLastName: this.editedItem.contactLastName,
-          contactPhoneNumber: this.editedItem.contactPhoneNumber,
-          companyId: parseInt(this.editedItem.companyId, 10),
-        };
-
-        const response = await axios.post('http://localhost:8000/contact', newContact);
-        this.contacts.push(response.data);
+        if (this.editedIndex > -1) {
+          // Item existente está sendo editado
+          const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
+          if (response.data.status) {
+            console.log('Contact updated successfully');
+            // Atribua diretamente os valores ao item na lista local
+            this.contacts[this.editedIndex].contactFirstName = this.editedItem.contactFirstName;
+            this.contacts[this.editedIndex].contactLastName = this.editedItem.contactLastName;
+            this.contacts[this.editedIndex].contactMail = this.editedItem.contactMail;
+            this.contacts[this.editedIndex].contactPhoneNumber = this.editedItem.contactPhoneNumber;
+            this.contacts[this.editedIndex].companyId = this.editedItem.companyId;
+          } else {
+            console.error('Error updating contact. Server response:', response.data);
+          }
+        } else {
+          // Novo contato está sendo adicionado
+          this.editedItem.contactId = uuidv4();
+          const response = await axios.post('http://localhost:8000/contact', this.editedItem);
+          if (response.data.status) {
+            console.log('Contact created successfully');
+            this.contacts.push(response.data); // Adicione o novo contato à lista local
+          } else {
+            console.error('Error creating contact. Server response:', response.data);
+          }
+        }
         this.close();
       } catch (error) {
-        console.error('Error creating contact:', error);
+        console.error('Error saving contact:', error);
       }
     },
 
@@ -219,7 +202,7 @@ export default {
 
     editItem(item) {
       this.editedIndex = this.contacts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.editedItem = { ...item }; // Clone os dados do item selecionado
       this.dialog = true;
     },
 
@@ -251,7 +234,6 @@ export default {
       }
     },
 
-    
     close() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -266,16 +248,6 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.contacts[this.editedIndex], this.editedItem);
-      } else {
-        this.contacts.push(this.editedItem);
-      }
-
-      this.close();
     },
   },
 };

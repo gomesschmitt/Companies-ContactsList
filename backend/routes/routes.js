@@ -33,6 +33,6 @@ router.route('/contact').post(contactController.postContact);
 
 router.route('/contact').delete(contactController.deleteContact); // only admin
 
-router.route('/contact/edit').patch(contactController.updateContact);
+router.route('/contact/edit/:id').patch(contactController.updateContact);
 
 module.exports = router;
