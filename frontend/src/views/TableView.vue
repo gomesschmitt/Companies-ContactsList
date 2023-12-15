@@ -98,13 +98,6 @@ export default {
     dialogDelete: false,
     model: 'rounded-0',
     headers: [
-      /*      {
-              title: 'Companies ID',
-             align: 'start',
-              sortable: false,
-              key: 'name',
-            },
-      */
       { title: 'Company ID', key: 'companyIdNumber' },
       { title: 'Company Name', key: 'companyName' },
       { title: 'Country', key: 'companyCountry' },
@@ -166,32 +159,60 @@ export default {
       return uuidv4();
   },
 
-async saveCompany() { 
+  async saveCompany() {
   try {
-    this.editedItem.companyIdNumber = this.companies.length + 1;
+    if (this.editedIndex > -1) {
+      const updatedCompany = {
+        companyIdNumber: this.editedItem.companyIdNumber,
+        companyName: this.editedItem.companyName,
+        companyCountry: this.editedItem.companyCountry,
+        companyCity: this.editedItem.companyCity,
+        companyZip: this.editedItem.companyZip,
+        companyStreet: this.editedItem.companyStreet,
+        companyMail: this.editedItem.companyMail,
+        companyContacts: this.editedItem.companyContacts,
+        createdBy: this.editedItem.createdBy,
+        createdOn: this.editedItem.createdOn,
+      };
 
-    const newCompany = {
-      companyIdNumber: this.editedItem.companyIdNumber,
-      companyName: this.editedItem.companyName,
-      companyCountry: this.editedItem.companyCountry,
-      companyCity: this.editedItem.companyCity,
-      companyZip: this.editedItem.companyZip,
-      companyStreet: this.editedItem.companyStreet,
-      companyMail: this.editedItem.companyMail,
-      companyContacts: this.editedItem.companyContacts,
-      createdBy: this.editedItem.createdBy,
-      createdOn: new Date().toLocaleDateString(),  
-    };
+      const response = await axios.patch(`http://localhost:8000/company/edit/${this.editedItem.companyIdNumber}`, updatedCompany);
 
-    const response = await axios.post('http://localhost:8000/company', newCompany);
-    this.companies.push(response.data);
-    this.close();
+      console.log('Server Response:', response.data);
+
+      if (response.data.status) {
+        console.log('Company updated successfully');
+        this.companies.splice(this.editedIndex, 1, response.data);
+        this.close();
+      } else {
+        console.error('Error updating company. Server response:', response.data.message);
+      }
+    } else {
+      const newCompany = {
+        companyName: this.editedItem.companyName,
+        companyCountry: this.editedItem.companyCountry,
+        companyCity: this.editedItem.companyCity,
+        companyZip: this.editedItem.companyZip,
+        companyStreet: this.editedItem.companyStreet,
+        companyMail: this.editedItem.companyMail,
+        companyContacts: this.editedItem.companyContacts,
+        createdBy: this.editedItem.createdBy,
+        createdOn: new Date().toLocaleDateString(),
+      };
+
+      const response = await axios.post('http://localhost:8000/company', newCompany);
+
+      if (response.data.status) {
+        console.log('Company created successfully');
+        this.companies.push(response.data);
+        this.close();
+      } else {
+        console.error('Error creating company. Server response:', response.data);
+      }
+    }
   } catch (error) {
-    console.error('Error creating company:', error);
+    console.error('Error saving company:', error);
   }
 },
-
-
 
     async fetchCompanies() {
       try {

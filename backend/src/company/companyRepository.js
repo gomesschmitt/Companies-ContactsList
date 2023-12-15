@@ -37,4 +37,27 @@ const deleteCompany = async (companyIdDelete) => {
   return result
 }
 
-module.exports = { insertCompany, getAllCompanies, deleteCompany }
+const updateCompany = async (companyId, updatedFields) => {
+  const existingCompany = await myColl.findOne({ companyIdNumber: companyId });
+  if (!existingCompany) {
+    throw new Error(`Company not found with the companyId: ${companyId}`);
+  }
+
+  const allowedFields = ['companyName', 'companyCountry', 'companyCity', 'companyZip', 'companyStreet', 'companyMail', 'companyContacts'];
+  const updateData = {};
+  for (const field of allowedFields) {
+    if (updatedFields[field] !== undefined) {
+      updateData[field] = updatedFields[field];
+    }
+  }
+
+  const result = await myColl.updateOne({ companyIdNumber: companyId }, { $set: updateData });
+
+  if (result.modifiedCount > 0) {
+    return { status: true, message: 'Company updated successfully' };
+  } else {
+    return { status: false, message: 'No changes detected. Company may not have been updated.' };
+  }
+}
+
+module.exports = { insertCompany, getAllCompanies, deleteCompany, updateCompany }

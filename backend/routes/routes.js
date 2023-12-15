@@ -25,6 +25,8 @@ router.route('/company').post(companyController.postCompany);
 
 router.route('/company').delete(companyController.deleteCompany); // only admin
 
+router.route('/company/edit/:id').patch(companyController.updateCompany)
+
 // Contact Routes
 
 router.route('/contacts/getAll').get(contactController.getAllContacts); // only admin

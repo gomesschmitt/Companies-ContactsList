@@ -15,4 +15,9 @@ const removeCompany = async (companyIdNumber) => {
     return response
 }
 
-module.exports = { createCompany, getAllCompanies, removeCompany }
+const updateCompany = async (companyId, updatedFields) => {
+    const response = await companyRepository.updateCompany(companyId, updatedFields);
+    return response;
+};
+
+module.exports = { createCompany, getAllCompanies, removeCompany, updateCompany }

@@ -27,5 +27,19 @@ var deleteCompany = async (req, res) => {
     }
 }
 
+var updateCompany = async (req, res) => {
+    try {
+        const status = await companyService.updateCompany(req.body.companyIdNumber, req.body);
+        if (status) {
+            res.send({ "status": true, "message": "Company updated successfully" });
+        } else {
+            res.send({ "status": false, "message": "Error updating company" });
+        }
+    } catch (error) {
+        console.error('Error updating company:', error);
+        res.status(500).send({ "status": false, "message": "Internal Server Error" });
+    }
+}
 
-module.exports = { postCompany, getAllCompanies, deleteCompany }
+
+module.exports = { postCompany, getAllCompanies, deleteCompany, updateCompany }
