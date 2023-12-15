@@ -76,7 +76,6 @@
 <script>
 import NavBar from '../components/NavBar.vue';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 
 export default {
   components: {
@@ -85,6 +84,7 @@ export default {
   data: () => ({
     dialog: false,
     dialogDelete: false,
+    contactIdCounter: parseInt(localStorage.getItem('contactIdCounter')) || 1,
     model: 'rounded-0',
     headers: [
       { title: 'Contact ID', key: 'contactIdNumber' },
@@ -131,11 +131,37 @@ export default {
   },
 
   created() {
-    this.initialize();
-    this.fetchContacts();
-  },
+  this.initialize();
+  this.fetchContacts();
+
+  const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
+  const maxContactId = Math.max(...existingContactIds, 0);
+
+  this.contactIdCounter = maxContactId + 1;
+},
 
   methods: {
+
+    findNextSequentialId() {
+    const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
+
+    for (let i = 1; i <= existingContactIds.length + 1; i++) {
+      if (!existingContactIds.includes(i)) {
+        return i;
+      }
+    }
+
+    return existingContactIds.length + 1;
+  },
+    resetContactIdCounter() {
+    this.contactIdCounter = 1;
+    localStorage.setItem('contactIdCounter', this.contactIdCounter);
+  },
+  
+    generateContactId() {
+      return this.contactIdCounter++;
+    },
+
     openUpdateDialog(item) {
       this.editedIndex = this.contacts.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -150,42 +176,33 @@ export default {
       });
     },
 
-    generateContactId() {
-      return uuidv4();
-    },
-
     async saveContact() {
-      try {
-        if (this.editedIndex > -1) {
-          // Item existente está sendo editado
-          const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
-          if (response.data.status) {
-            console.log('Contact updated successfully');
-            // Atribua diretamente os valores ao item na lista local
-            this.contacts[this.editedIndex].contactFirstName = this.editedItem.contactFirstName;
-            this.contacts[this.editedIndex].contactLastName = this.editedItem.contactLastName;
-            this.contacts[this.editedIndex].contactMail = this.editedItem.contactMail;
-            this.contacts[this.editedIndex].contactPhoneNumber = this.editedItem.contactPhoneNumber;
-            this.contacts[this.editedIndex].companyId = this.editedItem.companyId;
-          } else {
-            console.error('Error updating contact. Server response:', response.data);
-          }
-        } else {
-          // Novo contato está sendo adicionado
-          this.editedItem.contactId = uuidv4();
-          const response = await axios.post('http://localhost:8000/contact', this.editedItem);
-          if (response.data.status) {
-            console.log('Contact created successfully');
-            this.contacts.push(response.data); // Adicione o novo contato à lista local
-          } else {
-            console.error('Error creating contact. Server response:', response.data);
-          }
-        }
-        this.close();
-      } catch (error) {
-        console.error('Error saving contact:', error);
+  try {
+    if (this.editedIndex > -1) {
+      const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
+      if (response.data.status) {
+        console.log('Contact updated successfully');
+      } else {
+        console.error('Error updating contact. Server response:', response.data);
       }
-    },
+    } else {
+      if (!this.editedItem.contactId) {
+        this.editedItem.contactId = this.contacts.length + 1;
+      }
+
+      const response = await axios.post('http://localhost:8000/contact', this.editedItem);
+      if (response.data.status) {
+        console.log('Contact created successfully');
+        this.contacts.push(response.data);
+      } else {
+        console.error('Error creating contact. Server response:', response.data);
+      }
+    }
+    this.close();
+  } catch (error) {
+    console.error('Error saving contact:', error);
+  }
+},
 
     async fetchContacts() {
       try {
@@ -202,7 +219,7 @@ export default {
 
     editItem(item) {
       this.editedIndex = this.contacts.indexOf(item);
-      this.editedItem = { ...item }; // Clone os dados do item selecionado
+      this.editedItem = { ...item }; 
       this.dialog = true;
     },
 
@@ -221,7 +238,6 @@ export default {
         if (response.data.status) {
           console.log('Contact deleted successfully');
 
-          // Use a filter function to create a new list excluding the contact being deleted
           this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
 
           console.log('Updated contacts array:', this.contacts);

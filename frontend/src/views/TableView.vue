@@ -120,7 +120,7 @@ export default {
     companies: [],
     editedIndex: -1,
     editedItem: {
-      Company: '', // Certifique-se de que a chave está correta e com a mesma grafia
+      Company: '', 
       Country: '',
       ZipCode: '',
       Street: '',
@@ -161,8 +161,6 @@ export default {
   },
 
   methods: {
-
-    // TODO implement add companies input in FE to be saved in BE
 
     generateCompanyId() {
       return uuidv4();
@@ -230,7 +228,6 @@ async saveCompany() {
     if (response.data.status) {
       console.log('Company deleted successfully');
 
-      // Utilize a função filter para criar uma nova lista excluindo a empresa que está sendo deletada
       this.companies = this.companies.filter(company => company.companyIdNumber !== this.editedItem.companyIdNumber);
 
       console.log('Updated companies array:', this.companies);
