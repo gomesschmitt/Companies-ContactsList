@@ -189,7 +189,7 @@ export default {
       if (!this.editedItem.contactId) {
         this.editedItem.contactId = this.contacts.length + 1;
       }
-
+      this.editedItem.companyId = parseInt(this.editedItem.companyId);
       const response = await axios.post('http://localhost:8000/contact', this.editedItem);
       if (response.data.status) {
         console.log('Contact created successfully');
