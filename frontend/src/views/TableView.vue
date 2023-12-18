@@ -187,7 +187,11 @@ export default {
         console.error('Error updating company. Server response:', response.data.message);
       }
     } else {
+
+      this.editedItem.companyIdNumber = this.companies.length + 1;
+
       const newCompany = {
+        companyIdNumber: this.companies.length + 1,
         companyName: this.editedItem.companyName,
         companyCountry: this.editedItem.companyCountry,
         companyCity: this.editedItem.companyCity,
