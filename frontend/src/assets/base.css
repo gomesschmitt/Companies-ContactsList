@@ -84,3 +84,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.navbar-card {
+  z-index: 1000;
+}
+
+.selected-item {
+  background-color: var(--vt-c-divider-light-1); /* ou qualquer cor desejada */
+  color: var(--color-heading);
+}
