@@ -31,7 +31,8 @@
                     <v-text-field v-model="editedItem.contactPhoneNumber" label="Phone Number"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.companyId" label="Company ID"></v-text-field>
+                    <v-select v-model="editedItem.companyName" :items="companiesList.map(company => company.companyName)"
+                      label="Select Company"></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -82,6 +83,7 @@ export default {
     NavBar,
   },
   data: () => ({
+    companiesList: [],
     dialog: false,
     dialogDelete: false,
     contactIdCounter: parseInt(localStorage.getItem('contactIdCounter')) || 1,
@@ -131,33 +133,33 @@ export default {
   },
 
   created() {
-  this.initialize();
-  this.fetchContacts();
+    this.initialize();
+    this.fetchContacts();
+    this.fetchCompanies();
+    const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
+    const maxContactId = Math.max(...existingContactIds, 0);
 
-  const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
-  const maxContactId = Math.max(...existingContactIds, 0);
-
-  this.contactIdCounter = maxContactId + 1;
-},
+    this.contactIdCounter = maxContactId + 1;
+  },
 
   methods: {
 
     findNextSequentialId() {
-    const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
+      const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
 
-    for (let i = 1; i <= existingContactIds.length + 1; i++) {
-      if (!existingContactIds.includes(i)) {
-        return i;
+      for (let i = 1; i <= existingContactIds.length + 1; i++) {
+        if (!existingContactIds.includes(i)) {
+          return i;
+        }
       }
-    }
 
-    return existingContactIds.length + 1;
-  },
+      return existingContactIds.length + 1;
+    },
     resetContactIdCounter() {
-    this.contactIdCounter = 1;
-    localStorage.setItem('contactIdCounter', this.contactIdCounter);
-  },
-  
+      this.contactIdCounter = 1;
+      localStorage.setItem('contactIdCounter', this.contactIdCounter);
+    },
+
     generateContactId() {
       return this.contactIdCounter++;
     },
@@ -177,32 +179,50 @@ export default {
     },
 
     async saveContact() {
-  try {
-    if (this.editedIndex > -1) {
-      const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
-      if (response.data.status) {
-        console.log('Contact updated successfully');
-      } else {
-        console.error('Error updating contact. Server response:', response.data);
+      try {
+        if (this.editedIndex > -1) {
+          const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
+          if (response.data.status) {
+            console.log('Contact updated successfully');
+          } else {
+            console.error('Error updating contact. Server response:', response.data);
+          }
+        } else {
+          if (!this.editedItem.contactId) {
+            this.editedItem.contactId = this.contacts.length + 1;
+          }
+
+          if (this.editedItem.companyName) {
+            const selectedCompany = this.companiesList.find(company => company.companyName === this.editedItem.companyName);
+            if (selectedCompany) {
+              this.editedItem.companyId = selectedCompany.companyIdNumber;
+            } else {
+              console.error('Selected company not found.');
+            }
+          }
+
+          const response = await axios.post('http://localhost:8000/contact', this.editedItem);
+          if (response.data.status) {
+            console.log('Contact created successfully');
+            this.contacts.push(response.data);
+          } else {
+            console.error('Error creating contact. Server response:', response.data);
+          }
+        }
+        this.close();
+      } catch (error) {
+        console.error('Error saving contact:', error);
       }
-    } else {
-      if (!this.editedItem.contactId) {
-        this.editedItem.contactId = this.contacts.length + 1;
+    },
+
+    async fetchCompanies() {
+      try {
+        const response = await axios.get('http://localhost:8000/companies/getAll');
+        this.companiesList = response.data.data || [];
+      } catch (error) {
+        console.error('Error getting company data:', error);
       }
-      this.editedItem.companyId = parseInt(this.editedItem.companyId);
-      const response = await axios.post('http://localhost:8000/contact', this.editedItem);
-      if (response.data.status) {
-        console.log('Contact created successfully');
-        this.contacts.push(response.data);
-      } else {
-        console.error('Error creating contact. Server response:', response.data);
-      }
-    }
-    this.close();
-  } catch (error) {
-    console.error('Error saving contact:', error);
-  }
-},
+    },
 
     async fetchContacts() {
       try {
@@ -219,7 +239,7 @@ export default {
 
     editItem(item) {
       this.editedIndex = this.contacts.indexOf(item);
-      this.editedItem = { ...item }; 
+      this.editedItem = { ...item };
       this.dialog = true;
     },
 

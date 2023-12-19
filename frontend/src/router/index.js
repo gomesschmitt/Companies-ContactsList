@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LogInView from '../views/LogInView.vue'
-import Companies from '../views/TableView.vue'
+import Companies from '../views/CompaniesList.vue'
 import SignUp from '../views/SignUpView.vue'
 import EditAccount from '../views/EditAccount.vue'
 import ContactList from '../views/ContactsList.vue'

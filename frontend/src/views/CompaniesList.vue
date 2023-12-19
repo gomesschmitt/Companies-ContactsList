@@ -34,12 +34,6 @@
                     <v-text-field v-model="editedItem.companyStreet" label="Street"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.companyMail" label="Mail Address"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.companyContacts" label="Contacts"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.createdBy" label="Created By"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
@@ -104,8 +98,6 @@ export default {
       { title: 'City', key: 'companyCity' },
       { title: 'ZipCode', key: 'companyZip' },
       { title: 'Street', key: 'companyStreet' },
-      { title: 'Mail Address', key: 'companyMail' },
-      { title: 'Contacts', key: 'companyContacts' },
       { title: 'Created By', key: 'createdBy' },
       { title: 'Created On', key: 'createdOn' },
       { title: 'Actions', key: 'actions', sortable: false },
@@ -117,8 +109,6 @@ export default {
       Country: '',
       ZipCode: '',
       Street: '',
-      MailAddress: '',
-      companyContacts: '',
       createdBy: '',
     },
     defaultItem: {
@@ -127,8 +117,6 @@ export default {
       Country: '',
       ZipCode: '',
       Street: '',
-      MailAddress: '',
-      companyContacts: '',
       createdBy: '',
     },
   }),
@@ -169,8 +157,6 @@ export default {
         companyCity: this.editedItem.companyCity,
         companyZip: this.editedItem.companyZip,
         companyStreet: this.editedItem.companyStreet,
-        companyMail: this.editedItem.companyMail,
-        companyContacts: this.editedItem.companyContacts,
         createdBy: this.editedItem.createdBy,
         createdOn: this.editedItem.createdOn,
       };
@@ -197,8 +183,6 @@ export default {
         companyCity: this.editedItem.companyCity,
         companyZip: this.editedItem.companyZip,
         companyStreet: this.editedItem.companyStreet,
-        companyMail: this.editedItem.companyMail,
-        companyContacts: this.editedItem.companyContacts,
         createdBy: this.editedItem.createdBy,
         createdOn: new Date().toLocaleDateString(),
       };
