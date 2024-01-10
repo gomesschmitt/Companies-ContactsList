@@ -16,14 +16,13 @@ const insertContact = async (contactId, contactMail, contactFirstName, contactLa
   if (contactInUse) {
     throw new Error(`The contact ${contactId} is already in use.`);
   }
-  // The CompanyContacts cannot be the same as contactId , otherwise gives an error
   const contact = {
     contactIdNumber: contactId,
     contactMail: contactMail,
     contactFirstName: contactFirstName,
     contactLastName: contactLastName,
     contactPhoneNumber: contactPhoneNumber,
-    companyId: companyId // Reference to the company
+    companyId: companyId 
   };
 
   const result = await myColl.insertOne(contact);
@@ -31,13 +30,11 @@ const insertContact = async (contactId, contactMail, contactFirstName, contactLa
 }
 
 const updateContact = async (contactId, updatedFields) => {
-  // Ensure that the contactId exists
   const existingContact = await myColl.findOne({ contactIdNumber: contactId });
   if (!existingContact) {
     throw new Error(`Contact not found with the contactId: ${contactId}`);
   }
 
-  // Update only allowed fields
   const allowedFields = ['contactMail', 'contactFirstName', 'contactLastName', 'contactPhoneNumber'];
   const updateData = {};
   for (const field of allowedFields) {
@@ -46,7 +43,6 @@ const updateContact = async (contactId, updatedFields) => {
     }
   }
 
-  // Update the contact with the specified fields
   const result = await myColl.updateOne({ contactIdNumber: contactId }, { $set: updateData });
   return result;
 }

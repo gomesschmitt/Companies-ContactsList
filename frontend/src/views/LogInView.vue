@@ -26,6 +26,22 @@
       <div class="mt-2">
         <p class="text-body-2">Don't have an account? <RouterLink to="/signup">Sign Up</RouterLink></p>
       </div>
+
+      <v-alert
+        v-if="showSuccessMessage"
+        type="success"
+        title="Success"
+        :text="successMessage"
+        style="margin: 16px;"
+      ></v-alert>
+
+      <v-alert
+        v-if="showErrorMessage"
+        type="error"
+        title="Error"
+        :text="errorMessage"
+        style="margin: 16px;"
+      ></v-alert>
     </v-card>
   </div>
 </template>
@@ -44,13 +60,19 @@ export default {
       username: '',
       password: '',
       showPassword: false,
+      showSuccessMessage: false,
+      showErrorMessage: false,
+      successMessage: '',
+      errorMessage: '',
+      redirectTimer: null,
     };
   },
   methods: {
     async login() {
       try {
         if (!this.username || !this.password) {
-          console.error('Please fill all the blanks.');
+          this.showErrorMessage = true;
+          this.errorMessage = 'Please fill all the blanks.';
           return;
         }
 
@@ -62,16 +84,31 @@ export default {
         console.log('API answer:', response.data);
 
         if (response.data.status === true) {
-          this.$router.push('/companies');
+          this.showSuccessMessage = true;
+          this.successMessage = 'Login successful';
+          this.showErrorMessage = false;
+
+          this.redirectTimer = setTimeout(() => {
+            this.$router.push('/companies');
+          }, 3000);
+        } else {
+          this.showErrorMessage = true;
+          this.errorMessage = 'Invalid credentials. Please try again.';
         }
 
       } catch (error) {
-        console.error('Authentication error:', error.response.data.message);
+        this.showErrorMessage = true;
+        this.errorMessage = 'Authentication error: ' + error.response.data.message;
       }
     },
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },
+  },
+  beforeUnmount() {
+    if (this.redirectTimer) {
+      clearTimeout(this.redirectTimer);
+    }
   },
 };
 </script>

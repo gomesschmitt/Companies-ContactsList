@@ -62,7 +62,7 @@
         </v-dialog>
       </v-toolbar>
     </template>
-    <template v-slot:item.actions="{ item }"> <!-- TODO FIX THIS MODIFIER-->
+    <template v-slot:item.actions="{ item }">
       <v-icon size="small" class="me-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
@@ -72,6 +72,19 @@
       <v-btn color="primary" @click="initialize"> Reset </v-btn>
     </template>
   </v-data-table>
+  <v-alert
+      v-if="showSuccessMessage"
+      type="success"
+      title="Success"
+      :text="successMessage"
+    ></v-alert>
+
+    <v-alert
+      v-if="showErrorMessage"
+      type="error"
+      title="Error"
+      :text="errorMessage"
+    ></v-alert>
 </template>
 
 <script>
@@ -83,6 +96,10 @@ export default {
     NavBar,
   },
   data: () => ({
+    showSuccessMessage: false,
+    showErrorMessage: false,
+    successMessage: '',
+    errorMessage: '',
     companiesList: [],
     dialog: false,
     dialogDelete: false,
@@ -143,7 +160,6 @@ export default {
   },
 
   methods: {
-
     findNextSequentialId() {
       const existingContactIds = this.contacts.map(contact => contact.contactIdNumber);
 
@@ -159,17 +175,14 @@ export default {
       this.contactIdCounter = 1;
       localStorage.setItem('contactIdCounter', this.contactIdCounter);
     },
-
     generateContactId() {
       return this.contactIdCounter++;
     },
-
     openUpdateDialog(item) {
       this.editedIndex = this.contacts.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.updateDialog = true;
     },
-
     closeUpdateDialog() {
       this.updateDialog = false;
       this.$nextTick(() => {
@@ -179,41 +192,85 @@ export default {
     },
 
     async saveContact() {
-      try {
-        if (this.editedIndex > -1) {
-          const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
-          if (response.data.status) {
-            console.log('Contact updated successfully');
-          } else {
-            console.error('Error updating contact. Server response:', response.data);
-          }
-        } else {
-          if (!this.editedItem.contactId) {
-            this.editedItem.contactId = this.contacts.length + 1;
-          }
+  try {
+    if (this.editedIndex > -1) {
+      // Se editedIndex for maior que -1, estamos editando um contato existente
+      const response = await axios.put(`http://localhost:8000/contact/${this.editedItem.contactIdNumber}`, this.editedItem);
 
-          if (this.editedItem.companyName) {
-            const selectedCompany = this.companiesList.find(company => company.companyName === this.editedItem.companyName);
-            if (selectedCompany) {
-              this.editedItem.companyId = selectedCompany.companyIdNumber;
-            } else {
-              console.error('Selected company not found.');
-            }
-          }
+      if (response.data.status) {
+        console.log('Contact updated successfully');
 
-          const response = await axios.post('http://localhost:8000/contact', this.editedItem);
-          if (response.data.status) {
-            console.log('Contact created successfully');
-            this.contacts.push(response.data);
-          } else {
-            console.error('Error creating contact. Server response:', response.data);
-          }
-        }
-        this.close();
-      } catch (error) {
-        console.error('Error saving contact:', error);
+        this.showSuccessMessage = true;
+        this.successMessage = 'Contact updated successfully';
+
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+        }, 3000);
+
+        // Atualize a tabela chamando a função fetchContacts
+        this.fetchContacts();
+      } else {
+        console.error('Error updating contact. Server response:', response.data);
+
+        this.showErrorMessage = true;
+        this.errorMessage = response.data.message || 'Error updating contact.';
+
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
       }
-    },
+    } else {
+      // Se editedIndex for menor ou igual a -1, estamos criando um novo contato
+      if (!this.editedItem.contactId) {
+        this.editedItem.contactId = this.contacts.length + 1;
+      }
+
+      if (this.editedItem.companyName) {
+        const selectedCompany = this.companiesList.find(company => company.companyName === this.editedItem.companyName);
+        if (selectedCompany) {
+          this.editedItem.companyId = selectedCompany.companyIdNumber;
+        } else {
+          console.error('Selected company not found.');
+        }
+      }
+
+      const response = await axios.post('http://localhost:8000/contact', this.editedItem);
+
+      if (response.data.status) {
+        console.log('Contact created successfully');
+
+        this.showSuccessMessage = true;
+        this.successMessage = 'Contact created successfully';
+
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+        }, 3000);
+
+        // Atualize a tabela chamando a função fetchContacts
+        this.fetchContacts();
+      } else {
+        console.error('Error creating contact. Server response:', response.data);
+
+        this.showErrorMessage = true;
+        this.errorMessage = response.data.message || 'Error creating contact.';
+
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
+      }
+    }
+
+    this.close();
+  } catch (error) {
+    console.error('Error saving contact:', error);
+
+    // ... Restante do código de tratamento de erro ...
+  }
+},
+
+
+
+
 
     async fetchCompanies() {
       try {
@@ -223,7 +280,6 @@ export default {
         console.error('Error getting company data:', error);
       }
     },
-
     async fetchContacts() {
       try {
         const response = await axios.get('http://localhost:8000/contacts/getAll');
@@ -232,23 +288,19 @@ export default {
         console.error('Error getting contact data:', error);
       }
     },
-
     initialize() {
       this.contacts = [];
     },
-
     editItem(item) {
       this.editedIndex = this.contacts.indexOf(item);
       this.editedItem = { ...item };
       this.dialog = true;
     },
-
     deleteItem(item) {
       this.editedIndex = this.contacts.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
-
     async deleteItemConfirm() {
       try {
         console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
@@ -269,7 +321,6 @@ export default {
         console.error('Error deleting contact:', error);
       }
     },
-
     close() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -277,7 +328,6 @@ export default {
         this.editedIndex = -1;
       });
     },
-
     closeDelete() {
       this.dialogDelete = false;
       this.$nextTick(() => {

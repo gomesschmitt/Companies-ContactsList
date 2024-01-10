@@ -34,7 +34,7 @@
         label="IBAN"
         class="mb-2"
       ></v-text-field>
-  
+
       <v-text-field
         v-model="password.value.value"
         :type="showPassword ? 'text' : 'password'"
@@ -65,6 +65,23 @@
         ></v-icon>
         Back
       </v-btn>
+      <div class="mb-4">
+      <v-alert
+        v-if="showSuccessMessage"
+        type="success"
+        title="Success"
+        :text="successMessage"
+        style="margin: 16px;"
+      ></v-alert>
+
+      <v-alert
+        v-if="showErrorMessage"
+        type="error"
+        title="Error"
+        :text="errorMessage"
+        style="margin: 16px;"
+      ></v-alert>
+    </div>
     </form>
   </v-card>
 </template>
@@ -81,7 +98,6 @@ const { handleSubmit, handleReset } = useForm({
   validationSchema: {
     email (value) {
         if (/^[a-z0-9.-]+@[a-z0-9.-]+\.[a-z]+$/i.test(value)) return true
-
         return 'Must be a valid e-mail.'
       },
     firstName(value) {
@@ -116,6 +132,11 @@ const birthDay = useField('birthDay');
 const iban = useField('iban');
 
 const showPassword = ref(false);
+const showSuccessMessage = ref(false);
+const showErrorMessage = ref(false);
+const successMessage = ref('');
+const errorMessage = ref('');
+const redirectTimer = ref(null);
 
 const handleSubmitFunction = async () => {
   try {
@@ -130,12 +151,21 @@ const handleSubmitFunction = async () => {
 
     console.log('Answer to backend:', response.data);
 
-    router.push('/');
+    showSuccessMessage.value = true;
+    successMessage.value = 'User created successfully';
+    showErrorMessage.value = false;
+
+    redirectTimer.value = setTimeout(() => {
+      router.push('/');
+    }, 5000);
   } catch (error) {
     console.error('Error calling backend:', error);
+
+    showSuccessMessage.value = false;
+    showErrorMessage.value = true;
+    errorMessage.value = 'Failed to create user. Please try again.';
   }
 };
-
 
 const submit = handleSubmit(values => {
   console.log('Form submitted with values:', values);

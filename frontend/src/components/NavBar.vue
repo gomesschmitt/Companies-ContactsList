@@ -2,7 +2,7 @@
   <v-card class="navbar-card">
     <v-layout>
       <v-navigation-drawer v-model="drawer" :rail="rail" permanent @click="rail = false">
-        <v-list-item :class="{ 'selected-item': isItemSelected('companiesList') }" @click="handleItemClick('companiesList')">
+        <v-list-item>
           <template v-slot:prepend-avatar>
             <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="John Leider">
           </template>
@@ -26,7 +26,7 @@
             <v-list-item :class="{ 'selected-item': isItemSelected('contactsList') }" @click="handleItemClick('contactsList')" prepend-icon="mdi-account-group-outline" title="Contacts List"></v-list-item>
           </RouterLink>
           <RouterLink to="/user/edit">
-            <v-list-item :class="{ 'selected-item': isItemSelected('editAccount') }" @click="handleItemClick('editAccount')" prepend-icon="mdi-account" title="Edit Account"></v-list-item>
+            <v-list-item prepend-icon="mdi-account" title="Edit Account"></v-list-item>
           </RouterLink>
           <RouterLink to="/">
             <v-list-item :class="{ 'selected-item': isItemSelected('signOut') }" @click="handleItemClick('signOut')" prepend-icon="md:home" title="Sign Out"></v-list-item>
