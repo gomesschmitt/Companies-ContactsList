@@ -194,33 +194,8 @@ export default {
     async saveContact() {
   try {
     if (this.editedIndex > -1) {
-      // Se editedIndex for maior que -1, estamos editando um contato existente
-      const response = await axios.put(`http://localhost:8000/contact/${this.editedItem.contactIdNumber}`, this.editedItem);
-
-      if (response.data.status) {
-        console.log('Contact updated successfully');
-
-        this.showSuccessMessage = true;
-        this.successMessage = 'Contact updated successfully';
-
-        setTimeout(() => {
-          this.showSuccessMessage = false;
-        }, 3000);
-
-        // Atualize a tabela chamando a função fetchContacts
-        this.fetchContacts();
-      } else {
-        console.error('Error updating contact. Server response:', response.data);
-
-        this.showErrorMessage = true;
-        this.errorMessage = response.data.message || 'Error updating contact.';
-
-        setTimeout(() => {
-          this.showErrorMessage = false;
-        }, 3000);
-      }
+      // alter code
     } else {
-      // Se editedIndex for menor ou igual a -1, estamos criando um novo contato
       if (!this.editedItem.contactId) {
         this.editedItem.contactId = this.contacts.length + 1;
       }
@@ -234,25 +209,35 @@ export default {
         }
       }
 
-      const response = await axios.post('http://localhost:8000/contact', this.editedItem);
+      try {
+        const response = await axios.post('http://localhost:8000/contact', this.editedItem);
 
-      if (response.data.status) {
-        console.log('Contact created successfully');
+        if (response.data.status) {
+          console.log('Contact created successfully');
 
-        this.showSuccessMessage = true;
-        this.successMessage = 'Contact created successfully';
+          this.showSuccessMessage = true;
+          this.successMessage = 'Contact created successfully';
 
-        setTimeout(() => {
-          this.showSuccessMessage = false;
-        }, 3000);
+          setTimeout(() => {
+            this.showSuccessMessage = false;
+          }, 3000);
 
-        // Atualize a tabela chamando a função fetchContacts
-        this.fetchContacts();
-      } else {
-        console.error('Error creating contact. Server response:', response.data);
+          this.fetchContacts();
+        } else {
+          console.error('Error creating contact. Server response:', response.data);
+
+          this.showErrorMessage = true;
+          this.errorMessage = response.data.message || 'Error creating contact.';
+
+          setTimeout(() => {
+            this.showErrorMessage = false;
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('Error creating contact:', error);
 
         this.showErrorMessage = true;
-        this.errorMessage = response.data.message || 'Error creating contact.';
+        this.errorMessage = 'Error creating contact.';
 
         setTimeout(() => {
           this.showErrorMessage = false;
@@ -264,13 +249,8 @@ export default {
   } catch (error) {
     console.error('Error saving contact:', error);
 
-    // ... Restante do código de tratamento de erro ...
   }
 },
-
-
-
-
 
     async fetchCompanies() {
       try {
@@ -302,25 +282,40 @@ export default {
       this.dialogDelete = true;
     },
     async deleteItemConfirm() {
-      try {
-        console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
+  try {
+    console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
 
-        const response = await axios.delete('http://localhost:8000/contact', { data: { contactIdNumber: this.editedItem.contactIdNumber } });
+    const response = await axios.delete('http://localhost:8000/contact', { data: { contactIdNumber: this.editedItem.contactIdNumber } });
 
-        if (response.data.status) {
-          console.log('Contact deleted successfully');
+    if (response.data.status) {
+      console.log('Contact deleted successfully');
 
-          this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
+      this.showSuccessMessage = true;
+      this.successMessage = 'Contact deleted successfully';
 
-          console.log('Updated contacts array:', this.contacts);
-          this.closeDelete();
-        } else {
-          console.error('Error deleting contact. Server response:', response.data);
-        }
-      } catch (error) {
-        console.error('Error deleting contact:', error);
-      }
-    },
+      setTimeout(() => {
+        this.showSuccessMessage = false;
+      }, 3000);
+
+      this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
+
+      console.log('Updated contacts array:', this.contacts);
+      this.closeDelete();
+    } else {
+      console.error('Error deleting contact. Server response:', response.data);
+
+      this.showErrorMessage = true;
+      this.errorMessage = response.data.message || 'Error deleting contact.';
+
+      setTimeout(() => {
+        this.showErrorMessage = false;
+      }, 3000);
+    }
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+
+  }
+},
     close() {
       this.dialog = false;
       this.$nextTick(() => {

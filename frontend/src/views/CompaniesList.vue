@@ -76,6 +76,19 @@
       <v-btn color="primary" @click="initialize"> Reset </v-btn>
     </template>
   </v-data-table>
+  <v-alert
+  v-if="showSuccessMessageCompany"
+  type="success"
+  title="Success"
+  :text="successMessageCompany"
+></v-alert>
+
+<v-alert
+  v-if="showErrorMessageCompany"
+  type="error"
+  title="Error"
+  :text="errorMessageCompany"
+></v-alert>
 </template>
 
 <script>
@@ -88,6 +101,10 @@ export default {
     NavBar,
   },
   data: () => ({
+    showSuccessMessageCompany: false,
+    showErrorMessageCompany: false,
+    successMessageCompany: '',
+    errorMessageCompany: '',
     dialog: false,
     dialogDelete: false,
     model: 'rounded-0',
@@ -163,17 +180,27 @@ export default {
 
       const response = await axios.patch(`http://localhost:8000/company/edit/${this.editedItem.companyIdNumber}`, updatedCompany);
 
-      console.log('Server Response:', response.data);
-
       if (response.data.status) {
-        console.log('Company updated successfully');
-        this.companies.splice(this.editedIndex, 1, response.data);
+        this.showSuccessMessageCompany = true;
+        this.successMessageCompany = 'Company updated successfully';
+
+        setTimeout(() => {
+          this.showSuccessMessageCompany = false;
+        }, 3000);
+
+        this.fetchCompanies();
         this.close();
       } else {
         console.error('Error updating company. Server response:', response.data.message);
+
+        this.showErrorMessageCompany = true;
+        this.errorMessageCompany = response.data.message || 'Error updating company.';
+
+        setTimeout(() => {
+          this.showErrorMessageCompany = false;
+        }, 3000);
       }
     } else {
-
       this.editedItem.companyIdNumber = this.companies.length + 1;
 
       const newCompany = {
@@ -190,17 +217,38 @@ export default {
       const response = await axios.post('http://localhost:8000/company', newCompany);
 
       if (response.data.status) {
-        console.log('Company created successfully');
-        this.companies.push(response.data);
+        this.showSuccessMessageCompany = true;
+        this.successMessageCompany = 'Company created successfully';
+
+        setTimeout(() => {
+          this.showSuccessMessageCompany = false;
+        }, 3000);
+
+        this.fetchCompanies();
         this.close();
       } else {
-        console.error('Error creating company. Server response:', response.data);
+        console.error('Error creating company. Server response:', response.data.message);
+
+        this.showErrorMessageCompany = true;
+        this.errorMessageCompany = response.data.message || 'Error creating company.';
+
+        setTimeout(() => {
+          this.showErrorMessageCompany = false;
+        }, 3000);
       }
     }
   } catch (error) {
     console.error('Error saving company:', error);
+
+    this.showErrorMessageCompany = true;
+    this.errorMessageCompany = 'Error saving company.';
+
+    setTimeout(() => {
+      this.showErrorMessageCompany = false;
+    }, 3000);
   }
 },
+
 
     async fetchCompanies() {
       try {
@@ -233,9 +281,16 @@ export default {
     console.log('Deleting company with ID:', this.editedItem.companyIdNumber);
 
     const response = await axios.delete('http://localhost:8000/company', { data: { companyIdNumber: this.editedItem.companyIdNumber } });
-    
+
     if (response.data.status) {
       console.log('Company deleted successfully');
+
+      this.showSuccessMessageCompany = true;
+      this.successMessageCompany = 'Company deleted successfully';
+
+      setTimeout(() => {
+        this.showSuccessMessageCompany = false;
+      }, 3000);
 
       this.companies = this.companies.filter(company => company.companyIdNumber !== this.editedItem.companyIdNumber);
 
@@ -243,6 +298,13 @@ export default {
       this.closeDelete();
     } else {
       console.error('Error deleting company. Server response:', response.data);
+
+      this.showErrorMessageCompany = true;
+      this.errorMessageCompany = response.data.message || 'Error deleting company.';
+
+      setTimeout(() => {
+        this.showErrorMessageCompany = false;
+      }, 3000);
     }
   } catch (error) {
     console.error('Error deleting company:', error);
