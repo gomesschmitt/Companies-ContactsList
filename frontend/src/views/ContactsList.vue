@@ -7,7 +7,7 @@
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn color="secondary" dark v-bind="props">
+            <v-btn color="secondary" dark v-bind="props" @click="openAddDialog">
               Add Contact
             </v-btn>
           </template>
@@ -40,11 +40,14 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="close">
-                Cancel
-              </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="saveContact">
+              <v-btn v-if="addingContact" color="blue-darken-1" variant="text" @click="saveContact">
                 Save
+              </v-btn>
+              <v-btn v-if="editingContact" color="blue-darken-1" variant="text" @click="updateContact">
+                Edit
+              </v-btn>
+              <v-btn color="red" variant="text" @click="close">
+                Cancel
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -72,19 +75,9 @@
       <v-btn color="primary" @click="initialize"> Reset </v-btn>
     </template>
   </v-data-table>
-  <v-alert
-      v-if="showSuccessMessage"
-      type="success"
-      title="Success"
-      :text="successMessage"
-    ></v-alert>
+  <v-alert v-if="showSuccessMessage" type="success" title="Success" :text="successMessage"></v-alert>
 
-    <v-alert
-      v-if="showErrorMessage"
-      type="error"
-      title="Error"
-      :text="errorMessage"
-    ></v-alert>
+  <v-alert v-if="showErrorMessage" type="error" title="Error" :text="errorMessage"></v-alert>
 </template>
 
 <script>
@@ -96,6 +89,9 @@ export default {
     NavBar,
   },
   data: () => ({
+
+    addingContact: false,
+    editingContact: false,
     showSuccessMessage: false,
     showErrorMessage: false,
     successMessage: '',
@@ -191,13 +187,41 @@ export default {
       });
     },
 
+    openAddDialog() {
+      this.addingContact = true;
+      this.editingContact = false;
+      this.dialog = true;
+    },
+
     async saveContact() {
   try {
     if (this.editedIndex > -1) {
-      // alter code
+      const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
+
+      if (response.data.status) {
+        console.log('Contact updated successfully');
+
+        this.showSuccessMessage = true;
+        this.successMessage = 'Contact updated successfully';
+
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+        }, 3000);
+
+        this.fetchContacts();
+      } else {
+        console.error('Error updating contact. Server response:', response.data);
+
+        this.showErrorMessage = true;
+        this.errorMessage = response.data.message || 'Error updating contact.';
+
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
+      }
     } else {
       if (!this.editedItem.contactId) {
-        this.editedItem.contactId = this.contacts.length + 1;
+        this.editedItem.contactId = this.findNextSequentialId();
       }
 
       if (this.editedItem.companyName) {
@@ -223,6 +247,8 @@ export default {
           }, 3000);
 
           this.fetchContacts();
+
+          this.renumberContactIds();
         } else {
           console.error('Error creating contact. Server response:', response.data);
 
@@ -248,9 +274,10 @@ export default {
     this.close();
   } catch (error) {
     console.error('Error saving contact:', error);
-
   }
 },
+
+
 
     async fetchCompanies() {
       try {
@@ -272,6 +299,8 @@ export default {
       this.contacts = [];
     },
     editItem(item) {
+      this.addingContact = false;
+      this.editingContact = true;
       this.editedIndex = this.contacts.indexOf(item);
       this.editedItem = { ...item };
       this.dialog = true;
@@ -282,40 +311,90 @@ export default {
       this.dialogDelete = true;
     },
     async deleteItemConfirm() {
-  try {
-    console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
+    try {
+      console.log('Deleting contact with ID:', this.editedItem.contactIdNumber);
 
-    const response = await axios.delete('http://localhost:8000/contact', { data: { contactIdNumber: this.editedItem.contactIdNumber } });
+      const response = await axios.delete('http://localhost:8000/contact', { data: { contactIdNumber: this.editedItem.contactIdNumber } });
 
-    if (response.data.status) {
-      console.log('Contact deleted successfully');
+      if (response.data.status) {
+        console.log('Contact deleted successfully');
 
-      this.showSuccessMessage = true;
-      this.successMessage = 'Contact deleted successfully';
+        this.showSuccessMessage = true;
+        this.successMessage = 'Contact deleted successfully';
 
-      setTimeout(() => {
-        this.showSuccessMessage = false;
-      }, 3000);
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+        }, 3000);
 
-      this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
+        this.contacts = this.contacts.filter(contact => contact.contactIdNumber !== this.editedItem.contactIdNumber);
 
-      console.log('Updated contacts array:', this.contacts);
-      this.closeDelete();
-    } else {
-      console.error('Error deleting contact. Server response:', response.data);
+        this.renumberContactIds();
 
-      this.showErrorMessage = true;
-      this.errorMessage = response.data.message || 'Error deleting contact.';
+        console.log('Updated contacts array:', this.contacts);
+        this.closeDelete();
+      } else {
+        console.error('Error deleting contact. Server response:', response.data);
 
-      setTimeout(() => {
-        this.showErrorMessage = false;
-      }, 3000);
+        this.showErrorMessage = true;
+        this.errorMessage = response.data.message || 'Error deleting contact.';
+
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error deleting contact:', error);
     }
-  } catch (error) {
-    console.error('Error deleting contact:', error);
+  },
 
-  }
-},
+  renumberContactIds() {
+    this.contacts.forEach((contact, index) => {
+      contact.contactIdNumber = index + 1;
+    });
+
+    this.contactIdCounter = this.contacts.length + 1;
+    localStorage.setItem('contactIdCounter', this.contactIdCounter);
+  },
+
+    async updateContact() {
+      try {
+        const response = await axios.patch(`http://localhost:8000/contact/edit/${this.editedItem.contactIdNumber}`, this.editedItem);
+
+        if (response.data.status) {
+          console.log('Contact updated successfully');
+
+          this.showSuccessMessage = true;
+          this.successMessage = 'Contact updated successfully';
+
+          setTimeout(() => {
+            this.showSuccessMessage = false;
+          }, 3000);
+
+          this.fetchContacts();
+        } else {
+          console.error('Error updating contact. Server response:', response.data);
+
+          this.showErrorMessage = true;
+          this.errorMessage = response.data.message || 'Error updating contact.';
+
+          setTimeout(() => {
+            this.showErrorMessage = false;
+          }, 3000);
+        }
+
+        this.close();
+      } catch (error) {
+        console.error('Error updating contact:', error);
+
+        this.showErrorMessage = true;
+        this.errorMessage = 'Error updating contact.';
+
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
+      }
+    },
+
     close() {
       this.dialog = false;
       this.$nextTick(() => {

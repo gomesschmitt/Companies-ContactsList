@@ -44,7 +44,12 @@ const updateContact = async (contactId, updatedFields) => {
   }
 
   const result = await myColl.updateOne({ contactIdNumber: contactId }, { $set: updateData });
-  return result;
+
+  if (result.modifiedCount > 0) {
+    return { status: true, message: 'Contact updated successfully' };
+  } else {
+    return { status: false, message: 'No changes detected. Contact may not have been updated.' };
+  }
 }
 
 const getAllContacts = async () => {

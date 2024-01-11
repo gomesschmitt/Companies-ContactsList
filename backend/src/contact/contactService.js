@@ -16,7 +16,12 @@ const removeContact = async (contactIdNumber) => {
 }
 
 const updateContact = async (contactId, updatedFields) => {
+    console.log("Updating contact with ID:", contactId);
+    console.log("Updated fields:", updatedFields);
+
     const response = await contactRepository.updateContact(contactId, updatedFields);
+    console.log("Update response:", response);
+
     return response;
 };
 
