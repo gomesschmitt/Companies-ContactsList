@@ -64,11 +64,29 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-
+        <v-dialog v-model="contactsDialog" max-width="600px">
+  <v-card>
+    <v-card-title class="text-h5">Contacts Information for {{ contactsDialogData.companyName }}</v-card-title>
+    <v-card-text>
+      <v-list>
+        <v-list-item v-if="contactsDialogData.contacts.length === 0">No contacts available.</v-list-item>
+        <v-list-item v-else v-for="(contact, index) in contactsDialogData.contacts" :key="index"></v-list-item>
+        <v-list-item v-for="(contact, index) in contactsDialogData.contacts" :key="index">
+          <v-list-item-content>
+            <v-list-item-title>{{ contact.contactFirstName }} {{ contact.contactLastName }}</v-list-item-title>
+            <v-list-item-subtitle>Email: {{ contact.contactMail }}, Phone: {{ contact.contactPhoneNumber }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-card-text>
+    <v-btn color="blue-darken-1" @click="closeContactsDialog">Close</v-btn>
+  </v-card>
+</v-dialog>
         <v-dialog v-model="infoDialog" max-width="600px">
           <v-card>
             <v-card-title class="text-h5">Company Information</v-card-title>
             <v-card-text>
+
               <v-list>
                 <v-list-item>
                   <v-list-item-content>
@@ -85,6 +103,12 @@
                   </v-list-item-content>
                   <v-list-item-content>
                     <v-list-item-title>Street: {{ detailsDialogData.companyStreet }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-content>
+                    <v-list-item-title>Contacts:
+  <v-icon size="small" class="mdi-contacts-icon" @click="openContactsDialog(detailsDialogData)">mdi-contacts</v-icon>
+  {{ detailsDialogData.companyStreet }}
+</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -107,6 +131,7 @@
       <v-icon size="small" @click="deleteItem(item)">
         mdi-delete
       </v-icon>
+
     </template>
 
     <template v-slot:no-data>
@@ -139,6 +164,7 @@ export default {
     NavBar,
   },
   data: () => ({
+    contactsDialog: false,
     infoDialog: false,
     detailsDialogData: {
     companyName: '',
@@ -148,6 +174,10 @@ export default {
     companyStreet: '',
     createdBy: '',
     createdOn: '',
+  },
+  contactsDialogData: {
+    companyName: '',
+    contacts: [],
   },
     showSuccessMessageCompany: false,
     showErrorMessageCompany: false,
@@ -185,21 +215,18 @@ export default {
       createdBy: '',
     },
   }),
-
+  contactsDialog: false,
+  contactsDialogData: {
+    companyName: '',
+    contacts: [],
+  },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
   },
 
-  watch: {
-    dialog(val) {
-      val || this.close()
-    },
-    dialogDelete(val) {
-      val || this.closeDelete()
-    },
-  },
+
 
   created() {
     this.initialize()
@@ -207,6 +234,30 @@ export default {
   },
 
   methods: {
+
+    openContactsDialog(item) {
+  if (this.infoDialog) {
+    this.infoDialog = false;
+  }
+
+  this.contactsDialogData = {
+    companyName: item.companyName,
+    contacts: item.contacts || [],
+  };
+
+  this.contactsDialog = true;
+},
+
+closeContactsDialog() {
+    this.contactsDialogData = {
+      companyName: '',
+      contacts: [],
+    };
+
+    this.contactsDialog = false;
+
+    this.infoDialog = false;
+  },
 
     openDetailsDialog(item) {
     this.infoDialog = true;
