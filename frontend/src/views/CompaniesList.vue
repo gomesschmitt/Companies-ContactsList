@@ -64,31 +64,69 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-dialog v-model="infoDialog" max-width="600px">
+          <v-card>
+            <v-card-title class="text-h5">Company Information</v-card-title>
+            <v-card-text>
+              <v-list>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>Company Name: {{ detailsDialogData.companyName }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-content>
+                    <v-list-item-title>Country: {{ detailsDialogData.companyCountry }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-content>
+                    <v-list-item-title>City: {{ detailsDialogData.companyCity }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-content>
+                    <v-list-item-title>Zip: {{ detailsDialogData.companyZip }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-content>
+                    <v-list-item-title>Street: {{ detailsDialogData.companyStreet }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="blue-darken-1" @click="infoDialog = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-toolbar>
     </template>
-    <template v-slot:item.actions="{ item }"> <!-- TODO FIX THIS MODIFIER-->
-      <v-icon size="small" class="me-2" @click="editItem(item)">
+    
+    <template v-slot:item.actions="{ item }">
+      <v-icon size="small" class="me-2" @click="openDetailsDialog(item)">
+        mdi-information
+      </v-icon>
+      <v-icon size="small" @click="editItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
+      <v-icon size="small" @click="deleteItem(item)">
+        mdi-delete
+      </v-icon>
     </template>
+
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize"> Reset </v-btn>
     </template>
   </v-data-table>
-  <v-alert
-  v-if="showSuccessMessageCompany"
-  type="success"
-  title="Success"
-  :text="successMessageCompany"
-></v-alert>
 
-<v-alert
-  v-if="showErrorMessageCompany"
-  type="error"
-  title="Error"
-  :text="errorMessageCompany"
-></v-alert>
+  <v-alert
+    v-if="showSuccessMessageCompany"
+    type="success"
+    title="Success"
+    :text="successMessageCompany"
+  ></v-alert>
+
+  <v-alert
+    v-if="showErrorMessageCompany"
+    type="error"
+    title="Error"
+    :text="errorMessageCompany"
+  ></v-alert>
 </template>
 
 <script>
@@ -101,6 +139,16 @@ export default {
     NavBar,
   },
   data: () => ({
+    infoDialog: false,
+    detailsDialogData: {
+    companyName: '',
+    companyCountry: '',
+    companyCity: '',
+    companyZip: '',
+    companyStreet: '',
+    createdBy: '',
+    createdOn: '',
+  },
     showSuccessMessageCompany: false,
     showErrorMessageCompany: false,
     successMessageCompany: '',
@@ -159,6 +207,20 @@ export default {
   },
 
   methods: {
+
+    openDetailsDialog(item) {
+    this.infoDialog = true;
+
+    this.detailsDialogData = {
+      companyName: item.companyName,
+      companyCountry: item.companyCountry,
+      companyCity: item.companyCity,
+      companyZip: item.companyZip,
+      companyStreet: item.companyStreet,
+      createdBy: item.createdBy,
+      createdOn: item.createdOn,
+    };
+  },
 
     generateCompanyId() {
       return uuidv4();
