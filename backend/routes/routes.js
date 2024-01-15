@@ -1,9 +1,10 @@
-var express = require('express');
+const express = require('express');
 
 const router = express.Router();
-var userController = require('../src/user/userController');
-var companyController = require('../src/company/companyController');
-var contactController = require('../src/contact/contactController')
+let userController = require('../src/user/userController');
+let companyController = require('../src/company/companyController');
+let contactController = require('../src/contact/contactController');
+
 
 // User Routes
 

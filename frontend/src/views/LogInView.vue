@@ -18,7 +18,7 @@
           @click:append="togglePasswordVisibility"
         ></v-text-field>
 
-        <v-btn type="submit" variant="outlined" color="secondary" :block="true" class="mt-2">
+        <v-btn type="submit" variant="outlined" color="secondary" :block="true" class="mt-2"  :disabled="loginInProgress">
           Sign in
         </v-btn>
       </v-form>
@@ -65,42 +65,48 @@ export default {
       successMessage: '',
       errorMessage: '',
       redirectTimer: null,
+      loginInProgress: false,
     };
   },
   methods: {
     async login() {
-      try {
-        if (!this.username || !this.password) {
-          this.showErrorMessage = true;
-          this.errorMessage = 'Please fill all the blanks.';
-          return;
-        }
+  try {
+    this.loginInProgress = true;
 
-        const response = await axios.post('http://localhost:8000/login', {
-          email: this.username,
-          password: this.password,
-        });
+    if (!this.username || !this.password) {
+      this.showErrorMessage = true;
+      this.errorMessage = 'Please fill all the blanks.';
+      return;
+    }
 
-        console.log('API answer:', response.data);
+    const response = await axios.post('http://localhost:8000/login', {
+      email: this.username,
+      password: this.password,
+    });
 
-        if (response.data.status === true) {
-          this.showSuccessMessage = true;
-          this.successMessage = 'Login successful';
-          this.showErrorMessage = false;
+    console.log('API answer:', response.data);
 
-          this.redirectTimer = setTimeout(() => {
-            this.$router.push('/companies');
-          }, 3000);
-        } else {
-          this.showErrorMessage = true;
-          this.errorMessage = 'Invalid credentials. Please try again.';
-        }
+    if (response.data.status === true) {
+      this.showSuccessMessage = true;
+      this.successMessage = 'Login successful';
+      this.showErrorMessage = false;
 
-      } catch (error) {
-        this.showErrorMessage = true;
-        this.errorMessage = 'Authentication error: ' + error.response.data.message;
-      }
-    },
+      this.redirectTimer = setTimeout(() => {
+        this.$router.push('/companies');
+        this.loginInProgress = false;
+      }, 3000);
+    } else {
+      this.showErrorMessage = true;
+      this.errorMessage = 'Invalid credentials. Please try again.';
+      this.loginInProgress = false;
+    }
+
+  } catch (error) {
+    this.showErrorMessage = true;
+    this.errorMessage = 'Authentication error: ' + error.response.data.message;
+    this.loginInProgress = false;
+  }
+},
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },
