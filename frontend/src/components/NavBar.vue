@@ -29,7 +29,12 @@
             <v-list-item prepend-icon="mdi-account" title="Edit Account"></v-list-item>
           </RouterLink>
           <RouterLink to="/">
-            <v-list-item :class="{ 'selected-item': isItemSelected('signOut') }" @click="handleItemClick('signOut')" prepend-icon="md:home" title="Sign Out"></v-list-item>
+            <v-list-item 
+              :class="{ 'selected-item': isItemSelected('signOut') }" 
+              @click="handleItemClick('signOut')" 
+              prepend-icon="mdi-logout" 
+              title="Sign Out">
+            </v-list-item>
           </RouterLink>
         </v-list>
       </v-navigation-drawer>
@@ -38,11 +43,14 @@
 </template>
   
 <script>
+import '@mdi/font/css/materialdesignicons.css';
+
 export default {
   data() {
     return {
       drawer: true,
       rail: true,
+      authenticated: true,
     };
   },
   methods: {

@@ -106,9 +106,8 @@
                   </v-list-item-content>
                   <v-list-item-content>
                     <v-list-item-title>Contacts:
-  <v-icon size="small" class="mdi-contacts-icon" @click="openContactsDialog(detailsDialogData)">mdi-contacts</v-icon>
-  {{ detailsDialogData.companyStreet }}
-</v-list-item-title>
+                     <v-icon size="small" class="mdi-contacts-icon" @click="openContactsDialog(detailsDialogData)">mdi-contacts</v-icon>
+                  </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -225,7 +224,9 @@ export default {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
   },
-
+  selectedCompany() {
+      return this.$store.state.selectedCompany;
+    },
 
 
   created() {
@@ -235,14 +236,18 @@ export default {
 
   methods: {
 
-    openContactsDialog(item) {
+    selectCompany(company) {
+      this.$store.commit('setSelectedCompany', company);
+    },
+
+openContactsDialog(item) {
   if (this.infoDialog) {
     this.infoDialog = false;
   }
 
   this.contactsDialogData = {
     companyName: item.companyName,
-    contacts: item.contacts || [],
+    contacts: item.contacts || [], // Assuming that contacts is an array of contact objects
   };
 
   this.contactsDialog = true;
@@ -259,19 +264,19 @@ closeContactsDialog() {
     this.infoDialog = false;
   },
 
-    openDetailsDialog(item) {
-    this.infoDialog = true;
+  openDetailsDialog(item) {
+  this.infoDialog = true;
 
-    this.detailsDialogData = {
-      companyName: item.companyName,
-      companyCountry: item.companyCountry,
-      companyCity: item.companyCity,
-      companyZip: item.companyZip,
-      companyStreet: item.companyStreet,
-      createdBy: item.createdBy,
-      createdOn: item.createdOn,
-    };
-  },
+  this.detailsDialogData = {
+    companyName: item.companyName,
+    companyCountry: item.companyCountry,
+    companyCity: item.companyCity,
+    companyZip: item.companyZip,
+    companyStreet: item.companyStreet,
+    createdBy: item.createdBy,
+    createdOn: item.createdOn,
+  };
+},
 
     generateCompanyId() {
       return uuidv4();

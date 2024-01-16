@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     authToken: null,
     userRole: null,
+    selectedCompany: null,
   },
   mutations: {
     setAuthToken(state, { token, role }) {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
     clearAuthToken(state) {
       state.authToken = null;
       state.userRole = null;
+    },
+    setSelectedCompany(state, company) {
+      state.selectedCompany = company;
     },
   },
   actions: {

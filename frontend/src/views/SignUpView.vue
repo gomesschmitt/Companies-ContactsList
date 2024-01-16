@@ -47,10 +47,10 @@
       <v-checkbox v-model="checkbox.value.value" :error-messages="checkbox.errorMessage.value" value="1"
         label="I agree to the terms of Service." type="checkbox"></v-checkbox>
       <br>
-      <v-btn class="me-16" type="submit" @click="handleSubmitFunction">Submit</v-btn>
+      <v-btn color="green" class="ml-11" type="submit" @click="handleSubmitFunction">Submit</v-btn>
 
-      <v-btn @click="handleReset" class="ml-5 mr-13">Clear</v-btn>
-      <v-btn class="ml-5" @click="goBack">
+      <v-btn color="grey" @click="handleReset" class="ml-5">Clear</v-btn>
+      <v-btn color="red" class="ml-5" @click="goBack">
         <v-icon start icon="mdi-arrow-left"></v-icon>
         Back
       </v-btn>
@@ -132,8 +132,14 @@ const updateSelectedDate = () => {
   const selectedDate = birthDay.value.value;
   
   if (selectedDate) {
-    formattedBirthDay.value = format(selectedDate, 'MMM dd yyyy');
-    birthDay.value.value = formattedBirthDay.value;
+    const formattedDate = selectedDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    formattedBirthDay.value = formattedDate;
+    birthDay.value.value = formattedDate;
   }
 
   closeDatePickerDialog();
