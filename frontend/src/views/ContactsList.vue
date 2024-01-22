@@ -71,9 +71,7 @@
       </v-icon>
       <v-icon size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
     </template>
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize"> Reset </v-btn>
-    </template>
+
   </v-data-table>
   <v-alert v-if="showSuccessMessage" type="success" title="Success" :text="successMessage"></v-alert>
 

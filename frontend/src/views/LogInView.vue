@@ -10,13 +10,16 @@
           hint="At least 8 characters"
         ></v-text-field>
 
-        <v-text-field
-          v-model="password"
-          :type="showPassword ? 'text' : 'password'"
-          label="Password"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          @click:append="togglePasswordVisibility"
-        ></v-text-field>
+        <div class="password-input">
+    <v-text-field
+      v-model="password"
+      :type="showPassword ? 'text' : 'password'"
+      label="Password"
+    ></v-text-field>
+    <v-icon class="password-icon" @click="togglePasswordVisibility">
+      {{ showPassword ? 'mdi-eye' : 'mdi-eye-off' }}
+    </v-icon>
+  </div>
 
         <v-btn type="submit" variant="outlined" color="secondary" :block="true" class="mt-2"  :disabled="loginInProgress">
           Sign in
@@ -82,7 +85,7 @@ export default {
     const response = await axios.post('http://localhost:8000/login', {
       email: this.username,
       password: this.password,
-    });
+    }, { withCredentials: true });
 
     console.log('API answer:', response.data);
 
@@ -90,6 +93,10 @@ export default {
       this.showSuccessMessage = true;
       this.successMessage = 'Login successful';
       this.showErrorMessage = false;
+
+      const token = response.data.token;
+  localStorage.setItem('jwt', token);
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       this.redirectTimer = setTimeout(() => {
         this.$router.push('/companies');
@@ -118,3 +125,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.password-input {
+  position: relative;
+}
+
+.password-icon {
+  position: absolute;
+  top: 40%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+</style>

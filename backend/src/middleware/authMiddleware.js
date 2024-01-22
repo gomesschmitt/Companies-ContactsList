@@ -1,32 +1,51 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const jwtSecret = process.env.JWT_SECRET;
 
-const authenticateUser = async (req, res, next) => {
-  const token = req.headers.authorization;
+adminAuth = (req, res, next) => {
+  console.log('Admin Auth Middleware Called');
+  console.log('Received Token:', req.headers.authorization);
+  const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
+  console.log('Received Token:', token);
+  if (!token) {
+    return res.status(401).json({ message: "Not authorized, token not available" });
+  }
+
+
+  jwt.verify(token, jwtSecret, (err, decodedToken) => {
+    console.log('Decoded Token:', decodedToken);
+    if (err || !decodedToken) {
+      return res.status(401).json({ message: "Not authorized" });
+    } else {
+      if (decodedToken.role !== "admin") {
+        return res.status(401).json({ message: "Not authorized" });
+      } else {
+        next();
+      }
+    }
+  });
+}
+
+userAuth = (req, res, next) => {
+  const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
 
   if (!token) {
-    console.log('Token not provided');
-    return res.status(401).json({ status: false, message: 'Unauthorized: Token not provided' });
+    return res.status(401).json({ message: "Not authorized, token not available" });
   }
 
-  const tokenWithoutBearer = token.replace('Bearer ', '');
+  jwt.verify(token, jwtSecret, (err, decodedToken) => {
+    console.log('Decoded Token in userAuth:', decodedToken);
+    if (err || !decodedToken) {
+      return res.status(401).json({ message: "Not authorized" });
+    } else {
+      console.log('Decoded Token:', decodedToken);
+      if (decodedToken.role !== "Basic") {
+        return res.status(401).json({ message: "Not authorized" });
+      } else {
+        next();
+      }
+    }
+  });
+}
 
-  try {
-    const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
-    console.log('Decoded Token:', decoded);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    console.error('Invalid Token:', error.message);
-    return res.status(401).json({ status: false, message: 'Unauthorized: Invalid token' });
-  }
-};
 
-
-const authorizeAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ status: false, message: 'Permission denied: Admin access required' });
-  }
-  next();
-};
-
-module.exports = { authenticateUser, authorizeAdmin };
+module.exports = { userAuth, adminAuth };

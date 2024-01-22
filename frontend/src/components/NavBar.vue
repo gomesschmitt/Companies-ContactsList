@@ -64,17 +64,15 @@ export default {
     return {
       drawer: true,
       rail: true,
-      authenticated: true,
       confirmationDialog: false,
     };
   },
   methods: {
     performSignOut() {
+  window.history.replaceState({}, document.title, '/');
 
-      this.$router.push({ name: 'LogIn' });
-
-      this.confirmationDialog = false;
-    },
+  this.$router.replace({ name: 'LogIn' });
+},
     openConfirmationDialog() {
       this.confirmationDialog = true;
     },

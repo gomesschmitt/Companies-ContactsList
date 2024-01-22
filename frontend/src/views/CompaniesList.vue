@@ -70,7 +70,6 @@
     <v-card-text>
       <v-list>
         <v-list-item v-if="contactsDialogData.contacts.length === 0">No contacts available.</v-list-item>
-        <v-list-item v-else v-for="(contact, index) in contactsDialogData.contacts" :key="index"></v-list-item>
         <v-list-item v-for="(contact, index) in contactsDialogData.contacts" :key="index">
           <v-list-item-content>
             <v-list-item-title>{{ contact.contactFirstName }} {{ contact.contactLastName }}</v-list-item-title>
@@ -106,8 +105,8 @@
                   </v-list-item-content>
                   <v-list-item-content>
                     <v-list-item-title>Contacts:
-                     <v-icon size="small" class="mdi-contacts-icon" @click="openContactsDialog(detailsDialogData)">mdi-contacts</v-icon>
-                  </v-list-item-title>
+  <v-icon size="small" class="mdi-contacts-icon" @click="openContactsDialog(detailsDialogData)">mdi-contacts</v-icon>
+</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -121,7 +120,7 @@
     </template>
     
     <template v-slot:item.actions="{ item }">
-      <v-icon size="small" class="me-2" @click="openDetailsDialog(item)">
+      <v-icon size="small" @click="openDetailsDialog(item)">
         mdi-information
       </v-icon>
       <v-icon size="small" @click="editItem(item)">
@@ -133,9 +132,7 @@
 
     </template>
 
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize"> Reset </v-btn>
-    </template>
+ 
   </v-data-table>
 
   <v-alert
@@ -157,7 +154,6 @@
 import NavBar from '../components/NavBar.vue';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-
 export default {
   components: {
     NavBar,
@@ -224,9 +220,7 @@ export default {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
   },
-  selectedCompany() {
-      return this.$store.state.selectedCompany;
-    },
+
 
 
   created() {
@@ -236,18 +230,14 @@ export default {
 
   methods: {
 
-    selectCompany(company) {
-      this.$store.commit('setSelectedCompany', company);
-    },
-
-openContactsDialog(item) {
+    openContactsDialog(item) {
   if (this.infoDialog) {
     this.infoDialog = false;
   }
 
   this.contactsDialogData = {
     companyName: item.companyName,
-    contacts: item.contacts || [], // Assuming that contacts is an array of contact objects
+    contacts: item.contacts || [],
   };
 
   this.contactsDialog = true;
@@ -264,19 +254,19 @@ closeContactsDialog() {
     this.infoDialog = false;
   },
 
-  openDetailsDialog(item) {
-  this.infoDialog = true;
+    openDetailsDialog(item) {
+    this.infoDialog = true;
 
-  this.detailsDialogData = {
-    companyName: item.companyName,
-    companyCountry: item.companyCountry,
-    companyCity: item.companyCity,
-    companyZip: item.companyZip,
-    companyStreet: item.companyStreet,
-    createdBy: item.createdBy,
-    createdOn: item.createdOn,
-  };
-},
+    this.detailsDialogData = {
+      companyName: item.companyName,
+      companyCountry: item.companyCountry,
+      companyCity: item.companyCity,
+      companyZip: item.companyZip,
+      companyStreet: item.companyStreet,
+      createdBy: item.createdBy,
+      createdOn: item.createdOn,
+    };
+  },
 
     generateCompanyId() {
       return uuidv4();
@@ -368,14 +358,22 @@ closeContactsDialog() {
 },
 
 
-    async fetchCompanies() {
-      try {
-        const response = await axios.get('http://localhost:8000/companies/getAll');
-        this.companies = response.data.data || [];
-      } catch (error) {
-        console.error('Error getting company data:', error);
-      }
-    },
+async fetchCompanies() {
+  try {
+    const token = localStorage.getItem('jwt');
+
+    const response = await axios.get('http://localhost:8000/companies/getAll', {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    this.companies = response.data.data || [];
+  } catch (error) {
+    console.error('Error getting company data:', error);
+  }
+},
     initialize() {
       this.companies = [
 

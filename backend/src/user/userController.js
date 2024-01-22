@@ -17,7 +17,8 @@ var register = async (req, res) => {
             email: req.body.email,
             userPassword: hashedPassword,
             userBirthDay: req.body.userBirthDay,
-            userIban: req.body.userIban
+            userIban: req.body.userIban,
+            role: req.body.role || 'Basic'
         });
         
         console.log('Creating user:', newUser);
@@ -35,7 +36,7 @@ var register = async (req, res) => {
     }
 };
 
-var login = async (req, res, next) => {
+const login = async (req, res, next) => {
     try {
         const username = req.body.email;
         const password = req.body.password;
@@ -46,7 +47,10 @@ var login = async (req, res, next) => {
             const result = await bcrypt.compare(password, user.userPassword);
 
             if (result) {
-                const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+                res.cookie('jwt', token, { httpOnly: true });
+
                 res.json({
                     status: true,
                     message: 'Login Successful!',
@@ -59,7 +63,6 @@ var login = async (req, res, next) => {
                 });
             }
         } else {
-
             res.json({
                 status: false,
                 message: 'No user found!'
