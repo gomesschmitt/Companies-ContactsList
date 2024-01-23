@@ -33,11 +33,6 @@
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.companyStreet" label="Street"></v-text-field>
                   </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.createdBy" label="Created By"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -310,7 +305,7 @@ closeContactsDialog() {
       }
     } else {
       this.editedItem.companyIdNumber = this.companies.length + 1;
-
+      const userEmail = localStorage.getItem('userEmail');
       const newCompany = {
         companyIdNumber: this.companies.length + 1,
         companyName: this.editedItem.companyName,
@@ -318,7 +313,7 @@ closeContactsDialog() {
         companyCity: this.editedItem.companyCity,
         companyZip: this.editedItem.companyZip,
         companyStreet: this.editedItem.companyStreet,
-        createdBy: this.editedItem.createdBy,
+        createdBy: userEmail,
         createdOn: new Date().toLocaleDateString(),
       };
 

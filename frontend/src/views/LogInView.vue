@@ -78,7 +78,7 @@ export default {
 
     if (!this.username || !this.password) {
       this.showErrorMessage = true;
-      this.errorMessage = 'Please fill all the blanks.';
+      this.errorMessage = 'Please fill in all the fields.';
       return;
     }
 
@@ -87,16 +87,19 @@ export default {
       password: this.password,
     }, { withCredentials: true });
 
-    console.log('API answer:', response.data);
+    console.log('API response:', response.data);
 
     if (response.data.status === true) {
+      const userEmail = this.username;
+      localStorage.setItem('userEmail', userEmail);
+      
       this.showSuccessMessage = true;
       this.successMessage = 'Login successful';
       this.showErrorMessage = false;
 
       const token = response.data.token;
-  localStorage.setItem('jwt', token);
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem('jwt', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       this.redirectTimer = setTimeout(() => {
         this.$router.push('/companies');
@@ -107,13 +110,14 @@ export default {
       this.errorMessage = 'Invalid credentials. Please try again.';
       this.loginInProgress = false;
     }
-
   } catch (error) {
     this.showErrorMessage = true;
     this.errorMessage = 'Authentication error: ' + error.response.data.message;
     this.loginInProgress = false;
   }
 },
+
+
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },

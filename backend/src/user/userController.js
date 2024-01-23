@@ -18,7 +18,7 @@ var register = async (req, res) => {
             userPassword: hashedPassword,
             userBirthDay: req.body.userBirthDay,
             userIban: req.body.userIban,
-            role: req.body.role || 'Basic'
+            role: req.body.role || 'user'
         });
         
         console.log('Creating user:', newUser);
