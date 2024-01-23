@@ -58,7 +58,6 @@
 
 <script>
 import '@mdi/font/css/materialdesignicons.css';
-
 export default {
   data() {
     return {
@@ -69,10 +68,10 @@ export default {
   },
   methods: {
     performSignOut() {
-  window.history.replaceState({}, document.title, '/');
+    localStorage.removeItem('jwt');
 
-  this.$router.replace({ name: 'LogIn' });
-},
+    this.$router.replace({ name: 'LogIn' });
+  },
     openConfirmationDialog() {
       this.confirmationDialog = true;
     },
