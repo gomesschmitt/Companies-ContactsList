@@ -32,6 +32,11 @@ const companySchema = new Schema({
     createdBy: {
         type: String
     },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
     createdOn: {
         type: Date,
         default: Date.now

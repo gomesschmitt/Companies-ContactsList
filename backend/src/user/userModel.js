@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+    companies: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Company'
+    }],
     email: {
         type: String,
         required: true,
@@ -29,10 +33,8 @@ const userSchema = new Schema({
         type: String,
         default: "user",
         required: true,
-      },
-    })
-//    role: { type: String, enum: ['user', 'admin'], default: 'user' },
-// }, { timestamps: true });
+    },
+});
 
 const User = mongoose.model('User', userSchema);
 
