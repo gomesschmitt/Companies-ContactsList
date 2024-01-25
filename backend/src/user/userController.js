@@ -3,6 +3,7 @@ const User = require('./userModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const companyService = require('../company/companyService')
+const contactService = require('../contact/contactService')
 
 var companyIdCounter = 1;
 
@@ -92,6 +93,37 @@ var register = async (req, res) => {
             req.body.email,
             new Date().toLocaleDateString()
         );
+
+        const contactData1 = {
+            contactIdNumber: '1',
+            contactMail: 'sign8@sign8.de',
+            contactFirstName: 'John',
+            contactLastName: 'Lennon',
+            contactPhoneNumber: '+49 123 123 678',
+            companyId: companyId1
+        };
+
+        const contactData2 = {
+            contactIdNumber: '2',
+            contactMail: 'transform8@transform8.de',
+            contactFirstName: 'Viktoria',
+            contactLastName: 'Hell',
+            contactPhoneNumber: '+49 989 123 678',
+            companyId: companyId2
+        };
+
+        const contactData3 = {
+            contactIdNumber: '3',
+            contactMail: 'transform8@transform8.pt',
+            contactFirstName: 'Nuno',
+            contactLastName: 'Sousa',
+            contactPhoneNumber: '+351 912 123 678',
+            companyId: companyId3
+        };
+        await contactService.createContacts(req.body.email, companyId1, contactData1);
+        await contactService.createContacts(req.body.email, companyId2, contactData2);
+        await contactService.createContacts(req.body.email, companyId3, contactData3);
+
 
         console.log('User created successfully');
 

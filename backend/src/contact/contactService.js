@@ -5,6 +5,24 @@ const createContact = async (contactIdNumber, contactMail, contactFirstName, con
     return response
 }
 
+const createContacts = async (userEmail, companyId, contactData) => {
+    try {
+        const response = await contactRepository.insertContact(
+            contactData.contactIdNumber,
+            contactData.contactMail,
+            contactData.contactFirstName,
+            contactData.contactLastName,
+            contactData.contactPhoneNumber,
+            companyId
+        );
+
+        return response;
+    } catch (error) {
+        console.error('Error creating contact:', error);
+        throw error;
+    }
+};
+
 const getAllContacts = async () => {
     const response = await contactRepository.getAllContacts()
     return response
@@ -25,4 +43,4 @@ const updateContact = async (contactId, updatedFields) => {
     return response;
 };
 
-module.exports = { createContact, getAllContacts, removeContact, updateContact }
+module.exports = { createContact, getAllContacts, removeContact, updateContact, createContacts }
