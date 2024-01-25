@@ -2,6 +2,9 @@ var userService = require('../user/userService')
 const User = require('./userModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const companyService = require('../company/companyService')
+
+var companyIdCounter = 1;
 
 var register = async (req, res) => {
     try {
@@ -25,6 +28,70 @@ var register = async (req, res) => {
 
 
         await newUser.save();
+
+        const companyId1 = companyIdCounter++;
+        const companyId2 = companyIdCounter++;
+        const companyId3 = companyIdCounter++;
+
+        await companyService.createCompany(
+            companyId1,
+            'Sign8 Gmbh',
+            'Germany',
+            'Munich',
+            '123-12',
+            'Street 123',
+            'contact1@company1.com',
+            [
+                {
+                    contactFirstName: 'Contact 1',
+                    contactLastName: 'Last 1',
+                    contactMail: 'contact1@company1.com',
+                    contactPhoneNumber: '123456789'
+                }
+            ],
+            req.body.email,
+            new Date().toLocaleDateString()
+        );
+
+        await companyService.createCompany(
+            companyId2,
+            'Transform8 Gmbh',
+            'Germany',
+            'Munich',
+            'Zip 123',
+            'Street 123',
+            'contact1@company2.com',
+            [
+                {
+                    contactFirstName: 'Contact 2',
+                    contactLastName: 'Last 2',
+                    contactMail: 'contact1@company2.com',
+                    contactPhoneNumber: '123456789'
+                }
+            ],
+            req.body.email,
+            new Date().toLocaleDateString()
+        );
+
+        await companyService.createCompany(
+            companyId3,
+            'Transform8 Portugal',
+            'Portugal',
+            'Porto',
+            'Zip 123',
+            'Street 123',
+            'contact1@company3.com',
+            [
+                {
+                    contactFirstName: 'Contact 3',
+                    contactLastName: 'Last 3',
+                    contactMail: 'contact1@company3.com',
+                    contactPhoneNumber: '123456789'
+                }
+            ],
+            req.body.email,
+            new Date().toLocaleDateString()
+        );
 
         console.log('User created successfully');
 

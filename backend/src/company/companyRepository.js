@@ -1,6 +1,8 @@
 const client = require('../../db');
+//const myDB = client.db("RobertoChallenge"); 
+//const myColl = myDB.collection("companies"); 
 
-const myDB = client.db("RobertoChallenge"); 
+const myDB = client.db("test"); 
 const myColl = myDB.collection("companies"); 
 
 const insertCompany = async (companyId, companyName, companyCountry, companyCity, companyZip, companyStreet, companyMail, companyContacts, createdBy, createdOn) => {
